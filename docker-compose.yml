@@ -1,0 +1,127 @@
+services:
+  # ================================================
+  # Nginx Web Server
+  # ================================================
+  nginx:
+    image: nginx:${NGINX_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}_nginx
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    environment:
+      - TZ=${PHP_TIMEZONE}
+    command: >
+      /bin/sh -c "apk add --no-cache tzdata &&
+      cp /usr/share/zoneinfo/$${TZ} /etc/localtime &&
+      echo $${TZ} > /etc/timezone &&
+      nginx -g 'daemon off;'"
+    volumes:
+      # Nginx 配置
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      # 專案目錄掛載（順序重要：先掛載父目錄，再掛載子目錄）
+      - ${WEB_ROOT_PATH}:/var/www/www.posdev:cached
+      # 子專案目錄覆蓋掛載
+      - ${PROJECT_PATH}:/var/www/www.posdev/zdpos_dev:cached
+      - ${PROJECT_OKL_PATH}:/var/www/www.posdev/zdpos_oklao:cached
+      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev:cached
+      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework:cached
+      # MyPOS KDS 專案 (Laravel)
+      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
+      # 日誌輸出
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - php
+    networks:
+      - pos_network
+    restart: unless-stopped
+
+  # ================================================
+  # PHP-FPM Service (動態版本)
+  # ================================================
+  php:
+    build:
+      context: ./php/php${PHP_VERSION}
+      dockerfile: Dockerfile
+      args:
+        PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT}
+        PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE}
+        PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE}
+        PHP_MAX_EXECUTION_TIME: ${PHP_MAX_EXECUTION_TIME}
+        PHP_TIMEZONE: ${PHP_TIMEZONE}
+    container_name: ${COMPOSE_PROJECT_NAME}_php
+    volumes:
+      # 專案目錄掛載（順序重要：先掛載父目錄，再掛載子目錄）
+      - ${WEB_ROOT_PATH}:/var/www/www.posdev:cached
+      # 子專案目錄覆蓋掛載
+      - ${PROJECT_PATH}:/var/www/www.posdev/zdpos_dev:cached
+      - ${PROJECT_OKL_PATH}:/var/www/www.posdev/zdpos_oklao:cached
+      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev:cached
+      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework:cached
+      # MyPOS KDS 專案 (Laravel)
+      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
+      # 日誌輸出
+      - ./logs/php:/var/log/php
+      # [新增] 應用程式日誌掛載點
+      # 宿主機路徑: ./logs/zdnStorage
+      # 容器內路徑: /var/www/zdnStorage/logs
+      - ./logs/zdnStorage/logs:/var/www/zdnStorage/logs
+      - ./logs/zdnStorage/invoices_dev:/var/www/zdnStorage/invoices_dev
+    environment:
+      - PHP_VERSION=${PHP_VERSION}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      - pos_network
+    restart: unless-stopped
+
+  # ================================================
+  # MySQL Database Service
+  # ================================================
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}_mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      - TZ=${PHP_TIMEZONE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      # MySQL 配置
+      - ./mysql/conf.d:/etc/mysql/conf.d:ro
+      # 初始化腳本
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+      # 資料持久化
+      - ./data/mysql:/var/lib/mysql
+      # 日誌輸出
+      - ./logs/mysql:/var/log/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone=+08:00
+      --innodb-buffer-pool-size=${MYSQL_INNODB_BUFFER_POOL_SIZE}
+      --innodb-log-file-size=${MYSQL_INNODB_LOG_FILE_SIZE}
+      --innodb-flush-log-at-trx-commit=2
+      --slow-query-log=1
+      --slow-query-log-file=/var/log/mysql/slow.log
+      --long-query-time=${MYSQL_SLOW_QUERY_TIME}
+      --sql-mode=ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    networks:
+      - pos_network
+    restart: unless-stopped
+
+# ================================================
+# Network Configuration
+# ================================================
+networks:
+  pos_network:
+    driver: bridge
+    name: ${COMPOSE_PROJECT_NAME}_network

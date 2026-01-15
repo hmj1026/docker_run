@@ -1,0 +1,107 @@
+# ================================================
+# POSDEV MySQL Configuration
+# 支援 MySQL 5.7 / 8.0 / 8.4
+# ================================================
+
+[mysqld]
+# ================================================
+# 字元集設定
+# ================================================
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+init-connect = 'SET NAMES utf8mb4'
+skip-character-set-client-handshake
+
+# ================================================
+# 認證插件 (相容 PHP 5.6)
+# ================================================
+default-authentication-plugin = mysql_native_password
+
+# ================================================
+# SQL Mode 設定
+# ================================================
+# 移除 ONLY_FULL_GROUP_BY 避免舊程式碼問題
+# 使用寬鬆模式以支援舊資料結構 (允許 '0000-00-00' 日期)
+sql_mode = ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+
+# ================================================
+# InnoDB 效能設定
+# ================================================
+# Buffer Pool 大小 (建議為實體記憶體的 50-70%)
+innodb_buffer_pool_size = 512M
+
+# Log File 大小
+innodb_log_file_size = 128M
+
+# Flush Log 策略 (開發環境優化效能)
+# 0 = 每秒寫入並 flush (最快,但可能遺失 1 秒資料)
+# 1 = 每次交易 flush (最安全,但較慢)
+# 2 = 每次交易寫入,每秒 flush (平衡)
+innodb_flush_log_at_trx_commit = 2
+
+# File-per-table (每個表獨立檔案)
+innodb_file_per_table = 1
+
+# ================================================
+# 連線設定
+# ================================================
+max_connections = 200
+max_connect_errors = 100000
+wait_timeout = 28800
+interactive_timeout = 28800
+
+# ================================================
+# 查詢快取 (MySQL 5.7 適用, 8.0+ 已移除)
+# ================================================
+# query_cache_type = 1
+# query_cache_size = 64M
+# query_cache_limit = 2M
+
+# ================================================
+# 日誌設定
+# ================================================
+# 一般查詢日誌 (開發環境可啟用)
+general_log = 0
+general_log_file = /var/log/mysql/mysql.log
+
+# 慢查詢日誌
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/slow.log
+long_query_time = 2
+log_queries_not_using_indexes = 0
+
+# 錯誤日誌
+log_error = /var/log/mysql/error.log
+
+# ================================================
+# 二進位日誌 (可選,用於複製或恢復)
+# ================================================
+# log_bin = /var/log/mysql/mysql-bin.log
+# expire_logs_days = 7
+# max_binlog_size = 100M
+
+# ================================================
+# 其他設定
+# ================================================
+# 禁用 DNS 解析 (效能優化)
+skip-name-resolve
+
+# 允許本地載入資料
+local_infile = 1
+
+# 時區
+default-time-zone = '+08:00'
+
+[mysql]
+# ================================================
+# MySQL Client 設定
+# ================================================
+default-character-set = utf8mb4
+
+[client]
+# ================================================
+# Client 設定
+# ================================================
+default-character-set = utf8mb4
+port = 3306
+socket = /var/run/mysqld/mysqld.sock

@@ -1,0 +1,12 @@
+.claude/
+openspec/
+
+# Docker environment
+.env
+data/mysql/*
+logs/**/*.log
+logs/**/*.xml
+nginx/ssl/*.crt
+nginx/ssl/*.key
+mysql/init/*
+!mysql/init/.gitkeep
