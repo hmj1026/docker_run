@@ -28,6 +28,8 @@ services:
       - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework:cached
       # MyPOS KDS 專案 (Laravel)
       - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
+      # Notifier 通知服務專案
+      - ${NOTIFIER_PATH}:/var/www/notifier:cached
       # 日誌輸出
       - ./logs/nginx:/var/log/nginx
     depends_on:
@@ -60,6 +62,8 @@ services:
       - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework:cached
       # MyPOS KDS 專案 (Laravel)
       - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
+      # Notifier 通知服務專案
+      - ${NOTIFIER_PATH}:/var/www/notifier:cached
       # 日誌輸出
       - ./logs/php:/var/log/php
       # [新增] 應用程式日誌掛載點
