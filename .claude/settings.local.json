@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(tee:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(curl:*)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec:*)",
+      "Bash(PHP_VERSION=74 docker-compose run:*)",
+      "Bash(PHP_VERSION=81 docker-compose build:*)",
+      "Bash(PHP_VERSION=81 docker-compose run:*)",
+      "Bash(PHP_VERSION=56 docker-compose build:*)",
+      "Bash(xargs cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
