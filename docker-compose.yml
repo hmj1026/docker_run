@@ -53,6 +53,7 @@ services:
         PHP_MAX_EXECUTION_TIME: ${PHP_MAX_EXECUTION_TIME}
         PHP_TIMEZONE: ${PHP_TIMEZONE}
     container_name: ${COMPOSE_PROJECT_NAME}_php
+    entrypoint: ["/bin/bash", "/usr/local/bin/php-entrypoint.sh"]
     volumes:
       # 專案目錄掛載（順序重要：先掛載父目錄，再掛載子目錄）
       - ${WEB_ROOT_PATH}:/var/www/www.posdev:cached
@@ -73,6 +74,8 @@ services:
       # 容器內路徑: /var/www/zdnStorage/logs
       - ./logs/zdnStorage/logs:/var/www/zdnStorage/logs
       - ./logs/zdnStorage/invoices_dev:/var/www/zdnStorage/invoices_dev
+      # Entrypoint script (mounted read-only)
+      - ./scripts/php-entrypoint.sh:/usr/local/bin/php-entrypoint.sh:ro
     environment:
       - PHP_VERSION=${PHP_VERSION}
       - MYSQL_HOST=mysql
