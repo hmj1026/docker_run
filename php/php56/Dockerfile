@@ -65,6 +65,19 @@ RUN docker-php-ext-install \
     intl
 
 # ================================================
+# 安裝 Xdebug 2.5.5 (PHP 5.6 支援的最高版本)
+# 用於程式碼覆蓋率報告 (phpunit --coverage-*)
+# ================================================
+RUN apt-get update -o Acquire::Check-Valid-Until=false && \
+    apt-get install -y --allow-unauthenticated $PHPIZE_DEPS && \
+    pecl install xdebug-2.5.5 && \
+    docker-php-ext-enable xdebug && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN echo "xdebug.default_enable=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.coverage_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# ================================================
 # 安裝 Composer 1.10.27 (PHP 5.6 支援的最高版本)
 # 注意: Composer 1.x 已於 2025/09/01 停止 Packagist 支援
 # ================================================

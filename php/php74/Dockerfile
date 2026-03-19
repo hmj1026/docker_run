@@ -63,6 +63,16 @@ RUN docker-php-ext-install \
     intl
 
 # ================================================
+# 安裝 Xdebug 3.x (PHP 7.4+ 相容版本)
+# 用於程式碼覆蓋率報告 (phpunit --coverage-*)
+# ================================================
+RUN pecl install xdebug && \
+    docker-php-ext-enable xdebug
+
+RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.start_with_request=no" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# ================================================
 # 安裝 Composer 2.2.24 (Composer 2.2 LTS，支援 PHP 7.2+)
 # ================================================
 COPY --from=composer:2.2.24 /usr/bin/composer /usr/local/bin/composer

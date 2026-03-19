@@ -1,8 +1,13 @@
 ﻿# POSDEV Docker 開發環境
 
-## ✨ 新功能：統一 Composer & PHPUnit 環境
+## ✨ 新功能：統一 Composer & PHPUnit 環境 + 程式碼覆蓋率支援
 
-所有 PHP 版本（5.6, 7.4, 8.0, 8.1, 8.2, 8.3）現已內建對應的最高 LTS 版本 Composer 和 PHPUnit！
+所有 PHP 版本（5.6, 7.4, 8.0, 8.1, 8.2, 8.3）現已內建對應的最高 LTS 版本 Composer、PHPUnit 以及 Xdebug，可直接產生程式碼覆蓋率報告。
+
+| PHP 版本 | Xdebug 版本 | 覆蓋率模式 |
+|---------|------------|---------|
+| 5.6     | 2.5.5      | `xdebug.coverage_enable=1`（預設啟用） |
+| 7.4+    | 3.x        | `xdebug.mode=coverage`（step debug 預設關閉） |
 
 📖 **詳細文件**: [docs/PHP_COMPOSER_PHPUNIT_SETUP.md](docs/PHP_COMPOSER_PHPUNIT_SETUP.md)
 
@@ -327,7 +332,18 @@ curl -k https://www.posdev.test/dev/
 # 應該看到網頁內容（不是 404 或 502）
 ```
 
-### 7. 檢查日誌
+### 7. 確認 Xdebug（覆蓋率驅動）
+```bash
+# 確認 Xdebug 已載入
+docker exec -i pos_php php -m | grep -i xdebug
+# 應顯示：xdebug
+
+# 確認覆蓋率可用（不應出現 "No code coverage driver is available"）
+docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
+  phpunit -c protected/tests/phpunit-fast.xml --coverage-text 2>&1 | head -5
+```
+
+### 8. 檢查日誌
 ```bash
 # 檢查 Nginx 錯誤日誌
 docker-compose logs nginx | tail -20
