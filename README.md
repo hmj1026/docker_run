@@ -247,6 +247,45 @@ bash scripts/switch-version.sh 80 8.0
 docker-compose down && docker-compose up -d --build
 ```
 
+## 程式碼覆蓋率
+
+所有 PHP Dockerfile 均已預裝 Xdebug，可直接執行覆蓋率報告。
+
+### 產生覆蓋率報告
+
+```bash
+# Text 報告（快速確認）
+docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
+  phpunit -c protected/tests/phpunit.xml --coverage-text
+
+# HTML 報告（視覺化）
+docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
+  phpunit -c protected/tests/phpunit.xml \
+  --coverage-html protected/tests/coverage/html
+```
+
+### PHP 版本與 Xdebug 對照
+
+| PHP 版本 | Xdebug 版本 | 預設行為 | Step Debug 啟用方式 |
+|---------|------------|---------|------------------|
+| 5.6     | 2.5.5      | 覆蓋率啟用，step debug 關閉 | `xdebug.default_enable=1` in ini |
+| 7.4~8.3 | 3.x        | 僅覆蓋率，不影響 web 效能 | `XDEBUG_MODE=debug` 環境變數 |
+
+### 故障排除
+
+```bash
+# 確認 Xdebug 版本與設定
+docker exec -i pos_php php --ri xdebug | grep -E "version|mode|coverage"
+
+# PHP 5.6 預期輸出（Xdebug 2.5.5）：
+# xdebug.coverage_enable => On => On
+
+# PHP 7.4+ 預期輸出（Xdebug 3.x）：
+# xdebug.mode => coverage => coverage
+```
+
+---
+
 ## 常見問題
 - 「連線不是私人連線」：自簽憑證，請信任 `nginx/ssl/laragon.crt` 或改用 HTTP。
 - 500 / `CDbConnection failed to open the DB connection`：
