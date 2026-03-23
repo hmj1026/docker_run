@@ -7,6 +7,7 @@ docker_run/
 │
 ├── 📄 README.md                    # 專案主要說明文件
 ├── 📄 docker-compose.yml           # Docker Compose 配置
+├── 📄 .dockerignore                # Docker build context 排除規則
 ├── 📄 .env                         # 環境變數配置
 ├── 📄 .env.example                 # 環境變數範例
 │
@@ -31,8 +32,10 @@ docker_run/
 │       └── php.ini                 # PHP 8.3 配置
 │
 ├── 📂 nginx/                       # Nginx 配置
+│   ├── Dockerfile                  # 自訂 Nginx image（含時區資料）
 │   ├── conf.d/
-│   │   └── default.conf            # Nginx 站點配置
+│   │   ├── 00-healthcheck.conf     # 內部健康檢查端點
+│   │   └── *.conf                  # Nginx 站點配置
 │   └── ssl/                        # SSL 憑證目錄
 │
 ├── 📂 mysql/                       # MySQL 配置
@@ -42,6 +45,7 @@ docker_run/
 │
 ├── 📂 docs/                        # 📖 文件目錄
 │   ├── PHP_COMPOSER_PHPUNIT_SETUP.md   # Composer & PHPUnit 配置說明
+│   ├── DOCKER_BEST_PRACTICES_AUDIT.md  # Docker 最佳實務審查結果
 │   ├── VERSION_REFERENCE.md            # 版本對照表與疑難排解
 │   ├── ZDPOS_PATH_AND_BOOTSTRAP.md     # ZDPOS 路徑、入口、路由與設定檔關係
 │   ├── IMPLEMENTATION_PLAN.md          # 實作計畫與驗證記錄
@@ -77,6 +81,7 @@ docker_run/
 |------|------|
 | `README.md` | 專案主要說明，快速開始指引 |
 | `docker-compose.yml` | Docker 容器編排配置 |
+| `.dockerignore` | Docker build context 排除規則 |
 | `.env` | 環境變數設定（未納入版控） |
 | `.env.example` | 環境變數範例 |
 
@@ -84,6 +89,7 @@ docker_run/
 | 檔案 | 說明 |
 |------|------|
 | `PHP_COMPOSER_PHPUNIT_SETUP.md` | Composer & PHPUnit 統一安裝專案總覽 |
+| `DOCKER_BEST_PRACTICES_AUDIT.md` | Docker Compose / Dockerfile 最佳實務審查結果 |
 | `VERSION_REFERENCE.md` | 各 PHP 版本的 Composer 和 PHPUnit 版本對照表 |
 | `PATH_AND_BOOTSTRAP.md` | 說明 WSL / Windows 路徑、`/dev3/` bootstrap、`main.php` 與 `dev3.php` 的關係 |
 | `IMPLEMENTATION_PLAN.md` | 完整實作計畫、階段說明與驗證記錄 |
