@@ -29,7 +29,6 @@ services:
       # MyPOS KDS 專案 (Laravel)
       - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
       - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3:cached
-      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3:cached
       # Notifier 通知服務專案
       - ${NOTIFIER_PATH}:/var/www/notifier:cached
       # 日誌輸出
@@ -66,7 +65,6 @@ services:
       # MyPOS KDS 專案 (Laravel)
       - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
       - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3:cached
-      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3:cached
       # Notifier 通知服務專案
       - ${NOTIFIER_PATH}:/var/www/notifier:cached
       # 日誌輸出
