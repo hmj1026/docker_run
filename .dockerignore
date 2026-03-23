@@ -1,0 +1,15 @@
+.git
+.gitignore
+.agent/
+.agents/
+.claude/
+.codex/
+.gemini/
+.env
+data/
+logs/
+openspec/
+nginx/ssl/*.crt
+nginx/ssl/*.key
+mysql/init/*
+!mysql/init/.gitkeep
