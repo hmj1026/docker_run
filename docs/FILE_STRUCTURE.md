@@ -43,6 +43,7 @@ docker_run/
 ├── 📂 docs/                        # 📖 文件目錄
 │   ├── PHP_COMPOSER_PHPUNIT_SETUP.md   # Composer & PHPUnit 配置說明
 │   ├── VERSION_REFERENCE.md            # 版本對照表與疑難排解
+│   ├── ZDPOS_PATH_AND_BOOTSTRAP.md     # ZDPOS 路徑、入口、路由與設定檔關係
 │   ├── IMPLEMENTATION_PLAN.md          # 實作計畫與驗證記錄
 │   ├── TEST_GUIDE.md                   # 測試指南
 │   └── FILE_STRUCTURE.md               # 本文件
@@ -84,6 +85,7 @@ docker_run/
 |------|------|
 | `PHP_COMPOSER_PHPUNIT_SETUP.md` | Composer & PHPUnit 統一安裝專案總覽 |
 | `VERSION_REFERENCE.md` | 各 PHP 版本的 Composer 和 PHPUnit 版本對照表 |
+| `PATH_AND_BOOTSTRAP.md` | 說明 WSL / Windows 路徑、`/dev3/` bootstrap、`main.php` 與 `dev3.php` 的關係 |
 | `IMPLEMENTATION_PLAN.md` | 完整實作計畫、階段說明與驗證記錄 |
 | `TEST_GUIDE.md` | 測試指南、疑難排解與快速參考 |
 | `FILE_STRUCTURE.md` | 專案檔案結構說明（本文件） |
