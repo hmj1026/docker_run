@@ -38,23 +38,24 @@ help:
 	@echo ""
 	@echo "================================================"
 
-# 啟動所有容器
+# 啟動所有容器（--force-recreate 確保 WSL2 bind mount 正確掛載）
 up:
-	docker-compose up -d
+	docker-compose up -d --force-recreate
 
 # 停止並移除所有容器
 down:
-	docker-compose down
+	docker-compose down --remove-orphans
 
-# 重啟所有容器
+# 重啟所有容器（必須 force-recreate 以確保掛載正確）
 restart:
-	docker-compose restart
+	docker-compose down --remove-orphans
+	docker-compose up -d --force-recreate
 
 # 重新建置並啟動容器
 build:
-	docker-compose down
+	docker-compose down --remove-orphans
 	docker-compose build --no-cache
-	docker-compose up -d
+	docker-compose up -d --force-recreate
 
 # 查看所有容器日誌
 logs:
