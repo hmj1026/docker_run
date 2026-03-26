@@ -404,6 +404,8 @@ docker-compose logs mysql | tail -20
 |---------|---------|---------|
 | 容器無法啟動 | PORT 被占用 | 停止 Laragon 或其他服務 |
 | 404 錯誤 | Nginx 配置或路徑掛載錯誤 | 檢查 .env 路徑設定 |
+| 商戶目錄 404 (dev3, 186 等) | docker-compose.yml 缺少該商戶的個別掛載 | 在 nginx 和 php 的 volumes 區段加入 `${WEB_ROOT_PATH}/<dir>:/var/www/www.posdev/<dir>:cached` |
+| zdnStorage 權限錯誤 | 新建目錄權限不正確 | 等待 60 秒（背景修復程序會自動修正），或重啟容器 |
 | 500 錯誤 | PHP 錯誤或資料庫連線失敗 | 檢查日誌，確認 DB host=mysql |
 | 找不到 yii_framework | 路徑掛載錯誤 | 確認 .env 中 YII_FRAMEWORK_PATH |
 | 資料庫連線失敗 | DB host 未改為 mysql | 修改商戶配置檔 |
