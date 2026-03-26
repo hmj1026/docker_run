@@ -36,18 +36,20 @@ All projects use a **distributed management model**:
 cp .env.example .env
 # Edit .env to set PROJECT_PATH, YII_FRAMEWORK_PATH, WEB_ROOT_PATH, etc.
 
-# Start all services
-docker-compose up -d
+# Start all services (--force-recreate is required for WSL2 bind mounts)
+docker-compose up -d --force-recreate
 
 # Build and start (if images changed)
-docker-compose build --no-cache && docker-compose up -d
+docker-compose build --no-cache && docker-compose up -d --force-recreate
 
 # Stop services
-docker-compose down
+docker-compose down --remove-orphans
 
 # Full rebuild (removes containers/networks)
-docker-compose down && docker-compose build --no-cache && docker-compose up -d
+docker-compose down --remove-orphans && docker-compose build --no-cache && docker-compose up -d --force-recreate
 ```
+
+> **Important**: Always use `--force-recreate` with `docker-compose up`. Without it, Docker Desktop + WSL2 may reuse stale mount caches, causing bind mounts from WSL2 Linux filesystem paths to appear empty inside containers.
 
 ### Make Commands (preferred - use instead of docker-compose directly)
 ```bash
@@ -208,48 +210,30 @@ docker-compose run --rm php phpunit --version
 
 ---
 
-## Storage Directory Management (Long-term Solution)
+## Storage Directory Management
 
-The application logs to `/var/www/zdnStorage/logs` and creates directories dynamically (e.g., 2026-03, 2026-04, etc.). To ensure new directories are created with correct permissions going forward, use the **StorageHelper** utility.
+The application logs to `/var/www/zdnStorage/logs` and creates directories dynamically (e.g., 2026-03, 2026-04, etc.).
 
-### Quick Fix (Immediate)
+### Permission Management (Automatic)
+
+`scripts/php-entrypoint.sh` provides two layers of permission management:
+
+1. **Startup fix**: On container start, sets `chmod -R 0777` and `chown www-data:www-data` on existing zdnStorage directories, plus `umask 0000` for the PHP-FPM process.
+2. **Background watcher**: A background process runs every 60 seconds, scanning `/var/www/zdnStorage` and correcting any directories to `0777` and files to `0666`. This catches directories created at runtime with wrong permissions (e.g., PHP `mkdir()` calls with restrictive mode parameters).
+
 If you're experiencing directory creation errors:
 ```
 fopen(/var/www/zdnStorage/logs/2026-04/.../file.xml): failed to open stream
 ```
 
-Restart containers with the updated docker-compose:
+Simply restart containers -- permissions will be auto-corrected within 60 seconds:
 ```bash
-docker-compose down && docker-compose up -d --build
+docker-compose down && docker-compose up -d
 ```
 
-The startup now includes `umask 0000` and `chmod -R 0777 /var/www/zdnStorage` to fix permissions.
+### StorageHelper (Optional Application-level Solution)
 
-### Long-term Solution (Recommended)
-Use the **StorageHelper** PHP class to ensure directories are created automatically with correct permissions:
-
-**Read the full guide**: [`docs/STORAGE_HELPER_INTEGRATION.md`](docs/STORAGE_HELPER_INTEGRATION.md)
-
-**Quick example**:
-```php
-<?php
-require_once('/usr/local/lib/php/StorageHelper.php');
-
-// Automatically create directory with proper permissions
-$logDir = StorageHelper::ensureDirectory('/var/www/zdnStorage/logs/2026-04/myapp');
-file_put_contents($logDir . '/app.log', 'Log content');
-```
-
-**Benefits**:
-- ✅ Automatic directory creation for all future months (2026-04, 2026-05, etc.)
-- ✅ Correct permissions maintained automatically
-- ✅ No manual intervention needed
-- ✅ Application code handles storage management
-
-**Integration steps**:
-1. Review `docs/STORAGE_HELPER_INTEGRATION.md`
-2. Integrate StorageHelper into application code (slog function, logging middleware)
-3. Test with: `docker-compose exec php php -r "require '/usr/local/lib/php/StorageHelper.php'; echo StorageHelper::verify('/var/www/zdnStorage/logs')['message'];"`
+For application-level directory management, see [`docs/STORAGE_HELPER_INTEGRATION.md`](docs/STORAGE_HELPER_INTEGRATION.md).
 
 ---
 
@@ -272,6 +256,7 @@ Self-signed certificates are used. Either:
 2. Check Nginx config: `docker-compose exec nginx nginx -t`
 3. Check file mounts: `docker-compose exec php ls -la /var/www/www.posdev/`
 4. Review Nginx logs: `docker-compose logs nginx`
+5. **Merchant directories 404** (dev3, 186, bdfy, etc.): These require explicit volume mounts in `docker-compose.yml` for both nginx and php services. Docker Desktop + WSL2 parent mount overlay is unreliable -- see the `# Merchant entry-point directories` section in `docker-compose.yml`. If a new merchant is added, its mount must be added to both services.
 
 ### Containers fail to start
 1. Check ports are available (80, 443, 3306)
@@ -324,6 +309,8 @@ Detailed docs are in `/docs/`:
 
 ### Volume Mounting Order
 In docker-compose.yml, parent directories mount before child directories. This allows child project directories to override parent mounts. Order matters for correct path resolution.
+
+**Known limitation**: Docker Desktop + WSL2 does not reliably propagate parent mount content when child mounts overlay the same path. All directories that need to be accessible inside the container (merchant entry-points like dev3, 186, bdfy, etc.) must have **explicit individual mounts** in both nginx and php services. When adding a new merchant directory to `www.posdev`, you must also add its mount to `docker-compose.yml`.
 
 ### PHP 5.6 Compatibility
 - No type hints, return types, or null coalescing operators (`??`)

@@ -29,6 +29,14 @@ services:
       # MyPOS KDS 專案 (Laravel)
       - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
       - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3:cached
+      # 商戶入口目錄（Docker Desktop + WSL2 parent mount overlay 不可靠，需個別掛載）
+      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3:cached
+      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186:cached
+      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy:cached
+      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao:cached
+      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei:cached
+      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn:cached
+      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake:cached
       # Notifier 通知服務專案
       - ${NOTIFIER_PATH}:/var/www/notifier:cached
       # 日誌輸出
@@ -72,6 +80,14 @@ services:
       # MyPOS KDS 專案 (Laravel)
       - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
       - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3:cached
+      # 商戶入口目錄（Docker Desktop + WSL2 parent mount overlay 不可靠，需個別掛載）
+      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3:cached
+      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186:cached
+      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy:cached
+      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao:cached
+      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei:cached
+      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn:cached
+      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake:cached
       # Notifier 通知服務專案
       - ${NOTIFIER_PATH}:/var/www/notifier:cached
       # 日誌輸出

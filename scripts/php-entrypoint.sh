@@ -18,4 +18,23 @@ done < <(find /var/www/www.posdev -mindepth 3 -maxdepth 3 -type d -path "*/asset
 
 umask 0000
 
+# -----------------------------------------------------------
+# Background permission watcher for zdnStorage
+# Corrects permissions on directories/files created at runtime
+# with wrong mode (e.g., PHP mkdir() with non-octal 755).
+# Runs every 60 seconds with minimal overhead.
+# -----------------------------------------------------------
+(
+  set +e
+  trap 'exit 0' TERM INT
+  while true; do
+    sleep 60 &
+    wait $!
+    find /var/www/zdnStorage -type d ! -perm 0777 -exec chmod 0777 {} + 2>/dev/null
+    find /var/www/zdnStorage -type f ! -perm 0666 -exec chmod 0666 {} + 2>/dev/null
+  done
+) &
+WATCHER_PID=$!
+trap "kill $WATCHER_PID 2>/dev/null" TERM INT
+
 exec php-fpm -F
