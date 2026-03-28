@@ -2,7 +2,12 @@
 # POSDEV Docker 環境快速指令集
 # ================================================
 # 使用 docker compose (v2 plugin) 指令
+# 支援平台: Linux, macOS (Docker Desktop), Windows (WSL2 / Git Bash)
 # ================================================
+
+# 從 .env 載入變數（檔案不存在時靜默跳過）
+-include .env
+export
 
 .PHONY: help up down restart build logs shell db-shell php-version mysql-version clean
 
@@ -78,7 +83,11 @@ shell:
 
 # 進入 MySQL 容器 Shell
 db-shell:
-	docker compose exec mysql mysql -uroot -p$(MYSQL_ROOT_PASSWORD) pos_dev
+	@if [ -z "$(MYSQL_ROOT_PASSWORD)" ]; then \
+	  docker compose exec mysql mysql -uroot $(MYSQL_DATABASE); \
+	else \
+	  docker compose exec mysql mysql -uroot -p$(MYSQL_ROOT_PASSWORD) $(MYSQL_DATABASE); \
+	fi
 
 # 顯示 PHP 版本
 php-version:
