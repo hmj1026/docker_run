@@ -123,7 +123,7 @@ interactive_mode() {
   echo "================================================"
   echo ""
   echo "請執行以下指令以套用變更:"
-  echo "  docker-compose down && docker-compose up -d --build"
+  echo "  docker compose down && docker compose up -d --build"
 }
 
 # ================================================
@@ -150,7 +150,7 @@ command_line_mode() {
   update_env_file "$php_ver" "$mysql_ver"
   echo ""
   echo "請執行以下指令以套用變更:"
-  echo "  docker-compose down && docker-compose up -d --build"
+  echo "  docker compose down && docker compose up -d --build"
 }
 
 # ================================================
