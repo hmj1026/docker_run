@@ -134,11 +134,16 @@ docker compose exec mysql mysql -uroot -e "SHOW DATABASES;"
 ```
 
 ### .env Path Format
-Use WSL2 native paths:
+Use your platform's native path format:
 ```bash
-# ✅ CORRECT (WSL2 native path)
+# Linux / WSL2:
 PROJECT_PATH=/home/<username>/projects/pos_dev
-WEB_ROOT_PATH=/home/<username>/projects/www.posdev
+
+# macOS:
+PROJECT_PATH=/Users/<username>/projects/pos_dev
+
+# Windows (Docker Desktop):
+PROJECT_PATH=C:/Users/<username>/projects/pos_dev
 ```
 
 ### Port Conflicts
@@ -151,13 +156,13 @@ lsof -i :3306
 
 ### Directory Structure Expected
 ```
-/home/<username>/projects/
-├── pos_dev/           # Main POS application
-├── yii_framework/     # Shared Yii 1.1
-├── www.posdev/        # Web root (merchants: dev/, xxoo/, etc.)
-├── mypos_kds/         # Laravel KDS
-├── conductor_dev/     # Community system
-└── notifier/          # Notification service
+<projects>/                # Platform-dependent base path (see .env Path Format above)
+├── pos_dev/               # Main POS application
+├── yii_framework/         # Shared Yii 1.1
+├── www.posdev/            # Web root (merchants: dev/, xxoo/, etc.)
+├── mypos_kds/             # Laravel KDS
+├── conductor_dev/         # Community system
+└── notifier/              # Notification service
 ```
 
 ---
@@ -317,7 +322,7 @@ Derived from `.env` COMPOSE_PROJECT_NAME (default: `posdev`):
 
 ## Development Workflow
 
-1. **Modify code** in host directory (e.g., `/home/<username>/projects/pos_dev/`)
+1. **Modify code** in host directory (e.g., `<projects>/pos_dev/`)
 2. **Changes sync immediately** to container (no rebuild needed)
 3. **Access via browser** or container shell to test
 4. **Check logs** if issues: `docker compose logs [service]`

@@ -44,8 +44,10 @@
 
 ### 軟體需求
 
-- **Docker CE + Compose v2 plugin**（安裝在 WSL2 內部）
-- **WSL2**（已啟用 systemd）
+- **Docker with Compose v2 plugin**（`docker compose version` 可確認）
+  - Linux / WSL2: Docker CE + Compose v2 plugin
+  - macOS: Docker Desktop for Mac（Compose v2 內建）
+  - Windows: WSL2 內 Docker CE 或 Docker Desktop with WSL2 backend
 - **Git**（用於專案版控）
 - **文字編輯器**（VS Code 推薦）
 
@@ -80,7 +82,7 @@ cp .env.example .env
 ```ini
 # /home/<username>/projects/docker_run/.env
 
-# 專案路徑映射（WSL2 原生路徑）
+# 專案路徑映射（依作業系統填入對應格式，見 .env.example）
 PROJECT_PATH=/home/<username>/projects/pos_dev
 MYPOS_KDS_PATH=/home/<username>/projects/mypos_kds
 YII_FRAMEWORK_PATH=/home/<username>/projects/yii_framework
@@ -144,12 +146,17 @@ docker compose ps
 
 ### Step 1: Docker 環境驗證
 
-確認 Docker CE 正在運行：
+確認 Docker 正在運行：
 
 ```bash
-systemctl status docker
 docker --version
 docker compose --version
+
+# Linux / WSL2 (Docker CE):
+systemctl status docker
+
+# macOS / Windows (Docker Desktop): 確認應用程式已啟動
+docker info >/dev/null 2>&1 && echo "Docker is running"
 ```
 
 ### Step 2: SSL 憑證確認

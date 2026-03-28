@@ -39,10 +39,18 @@ docker compose up -d
 ```
 
 ## 前置需求
-- WSL2（已啟用 systemd）
-- Docker CE + Compose v2 plugin（安裝在 WSL2 內部）
-- 專案目錄已存在於 WSL2 原生路徑（pos_dev、yii_framework、www.posdev）
+
+所有平台均需：
+- Docker with Compose v2 plugin（`docker compose version` 可確認）
+- 各專案目錄已存在（pos_dev、yii_framework、www.posdev）
 - hosts 檔案已設定：`127.0.0.1 www.posdev.test`
+
+| 平台 | Docker 安裝方式 | 路徑格式 |
+|------|----------------|---------|
+| Linux / WSL2 | Docker CE + Compose v2 plugin；需啟用 systemd | `/home/<username>/projects/...` |
+| macOS | [Docker Desktop for Mac](https://docs.docker.com/desktop/install/mac-install/)（Compose v2 內建） | `/Users/<username>/projects/...` |
+| Windows (WSL2) | WSL2 內安裝 Docker CE（效能最佳）或 Docker Desktop with WSL2 backend | `/home/<username>/projects/...` |
+| Windows (Docker Desktop) | [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/) | `C:/Users/<username>/projects/...`（正斜線） |
 
 ## 專案目錄結構要求
 
@@ -63,11 +71,13 @@ docker compose up -d
 
 Docker 會將以下目錄掛載到容器內：
 
-| Host 路徑（WSL2）            | 容器內路徑                          | 說明                |
+| Host 路徑                      | 容器內路徑                          | 說明                |
 |--------------------------------|-----------------------------------|---------------------|
-| `/home/<username>/projects/pos_dev`        | `/var/www/www.posdev/pos_dev`   | POS 主程式        |
-| `/home/<username>/projects/yii_framework`    | `/var/www/www.posdev/yii_framework`| Yii 框架           |
-| `/home/<username>/projects/www.posdev`       | `/var/www/www.posdev`             | Web 根目錄（含商戶）|
+| `<projects>/pos_dev`           | `/var/www/www.posdev/pos_dev`   | POS 主程式        |
+| `<projects>/yii_framework`    | `/var/www/www.posdev/yii_framework`| Yii 框架           |
+| `<projects>/www.posdev`        | `/var/www/www.posdev`             | Web 根目錄（含商戶）|
+
+> `<projects>` 依平台而異，見上方「前置需求」路徑格式。實際路徑以 `.env` 設定為準。
 
 **重要說明：**
 - `pos_dev` 和 `yii_framework` 使用獨立目錄管理，便於版本控制
@@ -108,7 +118,7 @@ ls /home/<username>/projects/www.posdev
 # 複製範本
 cp .env.example .env
 
-# 編輯 .env，確認路徑正確（WSL2 原生路徑）：
+# 編輯 .env，依作業系統填入對應路徑格式（見 .env.example 說明）：
 PROJECT_PATH=/home/<username>/projects/pos_dev
 YII_FRAMEWORK_PATH=/home/<username>/projects/yii_framework
 WEB_ROOT_PATH=/home/<username>/projects/www.posdev
@@ -150,10 +160,15 @@ WEB_ROOT_PATH=/home/<username>/projects/www.posdev
 
 #### 5. 確認 PORT 未被占用
 ```bash
-# 檢查 PORT 占用
+# Linux / macOS:
 lsof -i :80
 lsof -i :443
 lsof -i :3306
+
+# Windows (PowerShell):
+# netstat -ano | findstr :80
+# netstat -ano | findstr :443
+# netstat -ano | findstr :3306
 ```
 
 #### 6. 確認 SSL 憑證存在
@@ -163,10 +178,15 @@ ls nginx/ssl/
 # 若不存在，執行 bash scripts/generate-cert.sh
 ```
 
-#### 7. 確認 Docker CE 正在運行
+#### 7. 確認 Docker 正在運行
 ```bash
 docker ps  # 應該顯示容器列表（可能為空）
-systemctl status docker  # 確認 Docker 服務正在執行
+
+# Linux / WSL2 (Docker CE):
+systemctl status docker
+
+# macOS / Windows (Docker Desktop): 確認 Docker Desktop 已啟動
+docker info >/dev/null 2>&1 && echo "Docker is running"
 ```
 
 ## 啟動
@@ -264,7 +284,7 @@ docker exec -i pos_php php --ri xdebug | grep -E "version|mode|coverage"
   - 確認 `protected/config/dev3.php` 的 DB host 指向 `mysql`，帳密與 MySQL 容器一致。
   - 確認 MySQL 容器有對應 DB/使用者。
 - 找不到 `../yii_framework`：請確保 `.env` 路徑與 `docker-compose.yml` 的卷掛載一致（如上預設）。
-- 掛載失敗：確認專案位於 WSL2 原生路徑（`/home/<username>/projects/`），並確認 Docker CE 服務正在執行。
+- 掛載失敗：確認 `.env` 路徑格式正確（Linux/WSL2: `/home/...`，macOS: `/Users/...`，Windows: `C:/Users/...`），並確認 Docker 服務正在執行。
 
 ## 停止 / 清理
 ```bash

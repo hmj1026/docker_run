@@ -11,8 +11,11 @@
 
 ## 專案位置
 
-- `docker_run` 與所有專案目錄皆位於 WSL2 原生路徑（`/home/<username>/projects/`）
-- Docker CE 直接從 ext4 檔案系統讀取，無跨檔案系統邊界
+- `docker_run` 與所有專案目錄位於 Docker 可存取的原生路徑：
+  - Linux / WSL2: `/home/<username>/projects/`
+  - macOS: `/Users/<username>/projects/`
+  - Windows (Docker Desktop): `C:/Users/<username>/projects/`（使用正斜線）
+- Docker 直接從本地檔案系統讀取，無跨檔案系統邊界
 - **實際哪一份會被容器使用，永遠以 `.env` 為準**
 
 重點：
