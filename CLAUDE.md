@@ -36,22 +36,20 @@ All projects use a **distributed management model**:
 cp .env.example .env
 # Edit .env to set PROJECT_PATH, YII_FRAMEWORK_PATH, WEB_ROOT_PATH, etc.
 
-# Start all services (--force-recreate is required for WSL2 bind mounts)
-docker-compose up -d --force-recreate
+# Start all services
+docker compose up -d
 
 # Build and start (if images changed)
-docker-compose build --no-cache && docker-compose up -d --force-recreate
+docker compose build --no-cache && docker compose up -d
 
 # Stop services
-docker-compose down --remove-orphans
+docker compose down --remove-orphans
 
 # Full rebuild (removes containers/networks)
-docker-compose down --remove-orphans && docker-compose build --no-cache && docker-compose up -d --force-recreate
+docker compose down --remove-orphans && docker compose build --no-cache && docker compose up -d
 ```
 
-> **Important**: Always use `--force-recreate` with `docker-compose up`. Without it, Docker Desktop + WSL2 may reuse stale mount caches, causing bind mounts from WSL2 Linux filesystem paths to appear empty inside containers.
-
-### Make Commands (preferred - use instead of docker-compose directly)
+### Make Commands (preferred - use instead of docker compose directly)
 ```bash
 make help              # Show all available commands
 make up                # Start all containers
@@ -68,23 +66,20 @@ make mysql-version     # Show MySQL version
 
 ### PHP Version Switching (change PHP_VERSION in .env first)
 ```bash
-# Windows PowerShell (recommended)
-.\scripts\test-versions.ps1
-
-# Windows CMD
-scripts\test-versions.bat
-
-# Linux/Mac
+# Interactive mode
 bash scripts/switch-version.sh
 
+# Test all versions
+bash scripts/test-versions.sh
+
 # Manually
-PHP_VERSION=74 docker-compose build php --no-cache && docker-compose up -d
+PHP_VERSION=74 docker compose build php --no-cache && docker compose up -d
 ```
 
 ### Testing (within PHP container or via docker exec)
 ```bash
 # Enter PHP container
-docker-compose exec php bash
+docker compose exec php bash
 
 # Run PHPUnit tests
 docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php phpunit -c protected/tests/phpunit.xml
@@ -101,22 +96,22 @@ docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
 ### Debugging & Logs
 ```bash
 # View container status
-docker-compose ps
+docker compose ps
 
 # Check Nginx config
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # Follow Nginx logs
-docker-compose logs -f nginx
+docker compose logs -f nginx
 
 # Follow PHP logs
-docker-compose logs -f php
+docker compose logs -f php
 
 # Follow MySQL logs
-docker-compose logs -f mysql
+docker compose logs -f mysql
 
 # Database connection test
-docker-compose exec mysql mysql -uroot -e "SHOW DATABASES;"
+docker compose exec mysql mysql -uroot -e "SHOW DATABASES;"
 ```
 
 ---
@@ -139,30 +134,24 @@ docker-compose exec mysql mysql -uroot -e "SHOW DATABASES;"
 ```
 
 ### .env Path Format
-Use forward slashes (`/`) even on Windows for all paths:
+Use WSL2 native paths:
 ```bash
-# Windows ✅ CORRECT
-PROJECT_PATH=D:/projects/pos_dev
-WEB_ROOT_PATH=D:/projects/www.posdev
-
-# Windows ❌ WRONG
-PROJECT_PATH=D:\projects\pos_dev
+# ✅ CORRECT (WSL2 native path)
+PROJECT_PATH=/home/<username>/projects/pos_dev
+WEB_ROOT_PATH=/home/<username>/projects/www.posdev
 ```
 
 ### Port Conflicts
-Ensure ports 80, 443, 3306 are available. Stop Laragon or other services before starting Docker:
+Ensure ports 80, 443, 3306 are available. Stop other services before starting Docker:
 ```bash
-# Check for occupied ports (Windows)
-netstat -ano | findstr :80
-netstat -ano | findstr :443
-
-# macOS/Linux
 lsof -i :80
+lsof -i :443
+lsof -i :3306
 ```
 
 ### Directory Structure Expected
 ```
-E:/projects/
+/home/<username>/projects/
 ├── pos_dev/           # Main POS application
 ├── yii_framework/     # Shared Yii 1.1
 ├── www.posdev/        # Web root (merchants: dev/, xxoo/, etc.)
@@ -204,8 +193,8 @@ Each PHP version has pre-installed Composer and PHPUnit:
 
 Verify after version switch:
 ```bash
-docker-compose run --rm php composer --version
-docker-compose run --rm php phpunit --version
+docker compose run --rm php composer --version
+docker compose run --rm php phpunit --version
 ```
 
 ---
@@ -228,7 +217,7 @@ fopen(/var/www/zdnStorage/logs/2026-04/.../file.xml): failed to open stream
 
 Simply restart containers -- permissions will be auto-corrected within 60 seconds:
 ```bash
-docker-compose down && docker-compose up -d
+docker compose down && docker compose up -d
 ```
 
 ### StorageHelper (Optional Application-level Solution)
@@ -247,27 +236,27 @@ Self-signed certificates are used. Either:
 
 ### "CDbConnection failed to open the DB connection"
 1. Check database host is `mysql` (not localhost) in project configs
-2. Verify MySQL container is running: `docker-compose ps`
-3. Check MySQL logs: `docker-compose logs mysql`
+2. Verify MySQL container is running: `docker compose ps`
+3. Check MySQL logs: `docker compose logs mysql`
 4. Ensure database and user exist
 
 ### 404 or 502 errors
 1. Verify `.env` paths are correct and directories exist
-2. Check Nginx config: `docker-compose exec nginx nginx -t`
-3. Check file mounts: `docker-compose exec php ls -la /var/www/www.posdev/`
-4. Review Nginx logs: `docker-compose logs nginx`
-5. **Merchant directories 404** (dev3, 186, bdfy, etc.): These require explicit volume mounts in `docker-compose.yml` for both nginx and php services. Docker Desktop + WSL2 parent mount overlay is unreliable -- see the `# Merchant entry-point directories` section in `docker-compose.yml`. If a new merchant is added, its mount must be added to both services.
+2. Check Nginx config: `docker compose exec nginx nginx -t`
+3. Check file mounts: `docker compose exec php ls -la /var/www/www.posdev/`
+4. Review Nginx logs: `docker compose logs nginx`
+5. **Merchant directories 404** (dev3, 186, bdfy, etc.): These require explicit volume mounts in `docker-compose.yml` for both nginx and php services. If a new merchant is added, its mount must be added to both services.
 
 ### Containers fail to start
 1. Check ports are available (80, 443, 3306)
-2. Check Docker Desktop is running
-3. Review build logs: `docker-compose build --no-cache php`
+2. Check Docker CE is running: `systemctl status docker`
+3. Review build logs: `docker compose build --no-cache php`
 
 ### Host file entry needed
-Add to your hosts file:
-- Windows: `C:\Windows\System32\drivers\etc\hosts`
-- macOS/Linux: `/etc/hosts`
-- Content: `127.0.0.1 www.posdev.test`
+Add to `/etc/hosts`:
+```
+127.0.0.1 www.posdev.test
+```
 
 ---
 
@@ -310,7 +299,7 @@ Detailed docs are in `/docs/`:
 ### Volume Mounting Order
 In docker-compose.yml, parent directories mount before child directories. This allows child project directories to override parent mounts. Order matters for correct path resolution.
 
-**Known limitation**: Docker Desktop + WSL2 does not reliably propagate parent mount content when child mounts overlay the same path. All directories that need to be accessible inside the container (merchant entry-points like dev3, 186, bdfy, etc.) must have **explicit individual mounts** in both nginx and php services. When adding a new merchant directory to `www.posdev`, you must also add its mount to `docker-compose.yml`.
+All directories that need to be accessible inside the container (merchant entry-points like dev3, 186, bdfy, etc.) must have **explicit individual mounts** in both nginx and php services. When adding a new merchant directory to `www.posdev`, you must also add its mount to `docker-compose.yml`.
 
 ### PHP 5.6 Compatibility
 - No type hints, return types, or null coalescing operators (`??`)
@@ -328,12 +317,12 @@ Derived from `.env` COMPOSE_PROJECT_NAME (default: `posdev`):
 
 ## Development Workflow
 
-1. **Modify code** in host directory (e.g., `D:/projects/pos_dev/`)
+1. **Modify code** in host directory (e.g., `/home/<username>/projects/pos_dev/`)
 2. **Changes sync immediately** to container (no rebuild needed)
 3. **Access via browser** or container shell to test
-4. **Check logs** if issues: `docker-compose logs [service]`
+4. **Check logs** if issues: `docker compose logs [service]`
 5. **Database changes** might require SQL execution in MySQL container
-6. **Version changes** require `.env` modification + `docker-compose up -d --build`
+6. **Version changes** require `.env` modification + `docker compose up -d --build`
 
 ---
 
@@ -342,5 +331,5 @@ Derived from `.env` COMPOSE_PROJECT_NAME (default: `posdev`):
 - Read **README.md** for setup procedures
 - Read **docs/TEST_GUIDE.md** if testing multiple PHP versions
 - Read **docs/PHP_COMPOSER_PHPUNIT_SETUP.md** for Composer/PHPUnit details
-- Use `/scripts/switch-version.sh` (or .bat on Windows) to test versions
+- Use `bash scripts/switch-version.sh` to test versions
 - Run full test suite before committing: `phpunit -c protected/tests/phpunit.xml`

@@ -20,25 +20,25 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
       # 專案目錄掛載（順序重要：先掛載父目錄，再掛載子目錄）
-      - ${WEB_ROOT_PATH}:/var/www/www.posdev:cached
+      - ${WEB_ROOT_PATH}:/var/www/www.posdev
       # 子專案目錄覆蓋掛載
-      - ${PROJECT_PATH}:/var/www/www.posdev/zdpos_dev:cached
-      - ${PROJECT_OKL_PATH}:/var/www/www.posdev/zdpos_oklao:cached
-      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev:cached
-      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework:cached
+      - ${PROJECT_PATH}:/var/www/www.posdev/zdpos_dev
+      - ${PROJECT_OKL_PATH}:/var/www/www.posdev/zdpos_oklao
+      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
+      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
       # MyPOS KDS 專案 (Laravel)
-      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
-      - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3:cached
-      # 商戶入口目錄（Docker Desktop + WSL2 parent mount overlay 不可靠，需個別掛載）
-      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3:cached
-      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186:cached
-      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy:cached
-      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao:cached
-      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei:cached
-      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn:cached
-      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake:cached
+      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds
+      - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3
+      # 商戶入口目錄（個別掛載確保子目錄正確覆蓋父掛載）
+      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3
+      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186
+      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy
+      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao
+      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei
+      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn
+      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake
       # Notifier 通知服務專案
-      - ${NOTIFIER_PATH}:/var/www/notifier:cached
+      - ${NOTIFIER_PATH}:/var/www/notifier
       # 日誌輸出
       - ./logs/nginx:/var/log/nginx
     healthcheck:
@@ -71,25 +71,25 @@ services:
     entrypoint: ["/bin/bash", "/usr/local/bin/php-entrypoint.sh"]
     volumes:
       # 專案目錄掛載（順序重要：先掛載父目錄，再掛載子目錄）
-      - ${WEB_ROOT_PATH}:/var/www/www.posdev:cached
+      - ${WEB_ROOT_PATH}:/var/www/www.posdev
       # 子專案目錄覆蓋掛載
-      - ${PROJECT_PATH}:/var/www/www.posdev/zdpos_dev:cached
-      - ${PROJECT_OKL_PATH}:/var/www/www.posdev/zdpos_oklao:cached
-      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev:cached
-      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework:cached
+      - ${PROJECT_PATH}:/var/www/www.posdev/zdpos_dev
+      - ${PROJECT_OKL_PATH}:/var/www/www.posdev/zdpos_oklao
+      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
+      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
       # MyPOS KDS 專案 (Laravel)
-      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds:cached
-      - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3:cached
-      # 商戶入口目錄（Docker Desktop + WSL2 parent mount overlay 不可靠，需個別掛載）
-      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3:cached
-      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186:cached
-      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy:cached
-      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao:cached
-      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei:cached
-      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn:cached
-      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake:cached
+      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds
+      - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3
+      # 商戶入口目錄（個別掛載確保子目錄正確覆蓋父掛載）
+      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3
+      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186
+      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy
+      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao
+      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei
+      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn
+      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake
       # Notifier 通知服務專案
-      - ${NOTIFIER_PATH}:/var/www/notifier:cached
+      - ${NOTIFIER_PATH}:/var/www/notifier
       # 日誌輸出
       - ./logs/php:/var/log/php
       # [新增] 應用程式日誌掛載點

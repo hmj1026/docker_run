@@ -1,8 +1,7 @@
 # ================================================
 # POSDEV Docker 環境快速指令集
 # ================================================
-# 注意: Windows 環境下可能需要安裝 Make 工具
-# 或直接參考下方指令使用 docker-compose 指令
+# 使用 docker compose (v2 plugin) 指令
 # ================================================
 
 .PHONY: help up down restart build logs shell db-shell php-version mysql-version clean
@@ -38,56 +37,56 @@ help:
 	@echo ""
 	@echo "================================================"
 
-# 啟動所有容器（--force-recreate 確保 WSL2 bind mount 正確掛載）
+# 啟動所有容器
 up:
-	docker-compose up -d --force-recreate
+	docker compose up -d
 
 # 停止並移除所有容器
 down:
-	docker-compose down --remove-orphans
+	docker compose down --remove-orphans
 
-# 重啟所有容器（必須 force-recreate 以確保掛載正確）
+# 重啟所有容器
 restart:
-	docker-compose down --remove-orphans
-	docker-compose up -d --force-recreate
+	docker compose down --remove-orphans
+	docker compose up -d
 
 # 重新建置並啟動容器
 build:
-	docker-compose down --remove-orphans
-	docker-compose build --no-cache
-	docker-compose up -d --force-recreate
+	docker compose down --remove-orphans
+	docker compose build --no-cache
+	docker compose up -d
 
 # 查看所有容器日誌
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 # 查看 Nginx 日誌
 logs-nginx:
-	docker-compose logs -f nginx
+	docker compose logs -f nginx
 
 # 查看 PHP 日誌
 logs-php:
-	docker-compose logs -f php
+	docker compose logs -f php
 
 # 查看 MySQL 日誌
 logs-mysql:
-	docker-compose logs -f mysql
+	docker compose logs -f mysql
 
 # 進入 PHP 容器 Shell
 shell:
-	docker-compose exec php bash
+	docker compose exec php bash
 
 # 進入 MySQL 容器 Shell
 db-shell:
-	docker-compose exec mysql mysql -uroot -p$(MYSQL_ROOT_PASSWORD) pos_dev
+	docker compose exec mysql mysql -uroot -p$(MYSQL_ROOT_PASSWORD) pos_dev
 
 # 顯示 PHP 版本
 php-version:
-	docker-compose exec php php -v
+	docker compose exec php php -v
 
 # 顯示 MySQL 版本
 mysql-version:
-	docker-compose exec mysql mysql --version
+	docker compose exec mysql mysql --version
 
 # 清理未使用的映像與 Volume
 clean:
@@ -96,6 +95,6 @@ clean:
 
 # 完全清理 (包含 Volume,會刪除資料庫)
 clean-all:
-	docker-compose down -v
+	docker compose down -v
 	docker system prune -af
 	@echo "警告: 所有資料已清除!"

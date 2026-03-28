@@ -2,25 +2,23 @@
 
 ## 目的
 
-這份文件只說明三件事：
+這份文件只說明兩件事：
 
-1. Windows 與 WSL 在這套環境中的角色
-2. Docker 實際讀哪一份程式碼
-3. `/dev3/`、`dev3.php`、`main.php` 的關係
+1. Docker 實際讀哪一份程式碼
+2. `/dev3/`、`dev3.php`、`main.php` 的關係
 
 ---
 
-## Windows 與 WSL 的關係
+## 專案位置
 
-- `docker_run` 可以放在 Windows 檔案系統中
-- ZDPOS / web root / Yii framework 可以放在 Windows，也可以放在 WSL
+- `docker_run` 與所有專案目錄皆位於 WSL2 原生路徑（`/home/<username>/projects/`）
+- Docker CE 直接從 ext4 檔案系統讀取，無跨檔案系統邊界
 - **實際哪一份會被容器使用，永遠以 `.env` 為準**
 
-也就是說：
+重點：
 
-- 你看到哪一份資料夾存在，不代表容器就在用那一份
-- 不要靠肉眼猜是 Windows 還是 WSL
 - 只看 `.env` 和 `docker inspect`
+- 不要從設定檔內的路徑字串推測實際掛載來源
 
 ---
 
@@ -89,4 +87,4 @@
 3. 再看 `dev3/index.php`
 4. 最後看 `protected/config/dev3.php`
 
-不要反過來從設定檔內的路徑字串推測目前是 Windows 還是 WSL。
+不要反過來從設定檔內的路徑字串推測實際掛載來源。
