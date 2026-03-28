@@ -89,7 +89,7 @@ docker_run/
 | `PHP_COMPOSER_PHPUNIT_SETUP.md` | Composer & PHPUnit 統一安裝專案總覽 |
 | `DOCKER_BEST_PRACTICES_AUDIT.md` | Docker Compose / Dockerfile 最佳實務審查結果 |
 | `VERSION_REFERENCE.md` | 各 PHP 版本的 Composer 和 PHPUnit 版本對照表 |
-| `PATH_AND_BOOTSTRAP.md` | 說明 WSL / Windows 路徑、`/dev3/` bootstrap、`main.php` 與 `dev3.php` 的關係 |
+| `PATH_AND_BOOTSTRAP.md` | 說明跨平台路徑、`/dev3/` bootstrap、`main.php` 與 `dev3.php` 的關係 |
 | `IMPLEMENTATION_PLAN.md` | 完整實作計畫、階段說明與驗證記錄 |
 | `TEST_GUIDE.md` | 測試指南、疑難排解與快速參考 |
 | `FILE_STRUCTURE.md` | 專案檔案結構說明（本文件） |

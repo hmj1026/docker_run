@@ -74,11 +74,16 @@ PHPUnit 10.5.59 by Sebastian Bergmann and contributors.
 
 ### docker compose 指令找不到
 
-確認 Docker CE 正在運行：
+確認 Docker 正在運行：
 ```bash
-systemctl status docker
 docker --version
 docker compose --version
+
+# Linux / WSL2 (Docker CE):
+systemctl status docker
+
+# macOS / Windows (Docker Desktop): 確認應用程式已啟動
+docker info >/dev/null 2>&1 && echo "Docker is running"
 ```
 
 ---
