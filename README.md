@@ -12,12 +12,8 @@
 📖 **詳細文件**: [docs/PHP_COMPOSER_PHPUNIT_SETUP.md](docs/PHP_COMPOSER_PHPUNIT_SETUP.md)
 
 🧪 **快速測試**:
-```powershell
-# Windows PowerShell
-.\scripts\test-versions.ps1
-
-# Windows CMD
-scripts\test-versions.bat
+```bash
+bash scripts/test-versions.sh
 ```
 
 ---
@@ -35,17 +31,17 @@ cp .env.example .env
 # 手動停止 Laragon 所有服務
 
 # 3. 啟動 Docker 環境
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 
 # 4. 訪問網站
 # https://www.posdev.test/dev3/
 ```
 
 ## 前置需求
-- Windows 10/11 + WSL2 或 macOS 12+
-- Docker Desktop（啟用 WSL2 後端／Mac 上啟用虛擬化）
-- 專案目錄已存在（pos_dev、yii_framework、www.posdev）
+- WSL2（已啟用 systemd）
+- Docker CE + Compose v2 plugin（安裝在 WSL2 內部）
+- 專案目錄已存在於 WSL2 原生路徑（pos_dev、yii_framework、www.posdev）
 - hosts 檔案已設定：`127.0.0.1 www.posdev.test`
 
 ## 專案目錄結構要求
@@ -53,7 +49,7 @@ docker-compose up -d
 本專案採用**分散管理模式**，目錄結構如下：
 
 ```
-D:/projects/
+/home/<username>/projects/
 ├── pos_dev/              # POS 主程式（獨立開發目錄）
 ├── yii_framework/          # Yii 1.1 框架（共用）
 └── www.posdev/             # Web 根目錄
@@ -67,17 +63,17 @@ D:/projects/
 
 Docker 會將以下目錄掛載到容器內：
 
-| Host 路徑（Windows）            | 容器內路徑                          | 說明                |
+| Host 路徑（WSL2）            | 容器內路徑                          | 說明                |
 |--------------------------------|-----------------------------------|---------------------|
-| `D:/projects/pos_dev`        | `/var/www/www.posdev/pos_dev`   | POS 主程式        |
-| `D:/projects/yii_framework`    | `/var/www/www.posdev/yii_framework`| Yii 框架           |
-| `D:/projects/www.posdev`       | `/var/www/www.posdev`             | Web 根目錄（含商戶）|
+| `/home/<username>/projects/pos_dev`        | `/var/www/www.posdev/pos_dev`   | POS 主程式        |
+| `/home/<username>/projects/yii_framework`    | `/var/www/www.posdev/yii_framework`| Yii 框架           |
+| `/home/<username>/projects/www.posdev`       | `/var/www/www.posdev`             | Web 根目錄（含商戶）|
 
 **重要說明：**
 - `pos_dev` 和 `yii_framework` 使用獨立目錄管理，便於版本控制
 - `www.posdev` 下的同名目錄會被 Docker 掛載覆蓋
-- 所有修改在 Host 端的 `D:/projects/pos_dev` 會即時同步到容器
-- 若目前環境改用 WSL 路徑（例如 `/home/paul/projects/...`），**實際生效來源以 `.env` 為準**
+- 所有修改在 Host 端的 `/home/<username>/projects/pos_dev` 會即時同步到容器
+- 實際生效來源以 `.env` 為準
 - 關於 WSL / Windows 路徑、`/dev3/` 路由、`main.php` 與 `dev3.php` 的完整關係，請看 [docs/ZDPOS_PATH_AND_BOOTSTRAP.md](docs/ZDPOS_PATH_AND_BOOTSTRAP.md)
 
 ## Docker 專案結構（本儲存庫）
@@ -89,31 +85,22 @@ Docker 會將以下目錄掛載到容器內：
 - `mysql/init/`：資料庫初始化 SQL（不納入版本控制）
 - `scripts/`：版本切換、憑證產生等工具腳本
 
-## macOS 調整
-- 路徑分隔符請用 POSIX 形式，例如：
-  - `WEB_ROOT_PATH=/Users/<你>/projects/www.posdev`
-  - `PROJECT_PATH=/Users/<你>/projects/pos_dev`
-  - `YII_FRAMEWORK_PATH=/Users/<你>/projects/yii_framework`
-- 確認 Docker Desktop > Settings > Resources 有足夠記憶體（建議 >= 4GB）與磁碟存取權限允許掛載上述目錄。
-- hosts 設定同樣加入 `127.0.0.1 www.posdev.test`。
-- 若使用 Apple Silicon，官方 `mysql:5.7` 可能自動拉 x86 模式，啟動較慢；如遇啟動失敗可在 Docker Desktop 啟用 Rosetta 或改用相容 tag（仍建議先嘗試現有設定）。
-- nginx 時區會讀 `.env` 的 `PHP_TIMEZONE`（預設 Asia/Taipei），啟動時寫入 `/etc/localtime`。
 
 ## 環境設定
 
 ### 首次設定檢查清單
 
-在執行 `docker-compose up` 之前，請確認：
+在執行 `docker compose up` 之前，請確認：
 
 #### 1. 確認專案目錄結構正確
 ```bash
 # 檢查獨立目錄是否存在 pos_dev 為 V1資料夾假定名稱，請替換成實際資料夾資訊
-ls D:/projects/pos_dev
-ls D:/projects/yii_framework
-ls D:/projects/www.posdev
+ls /home/<username>/projects/pos_dev
+ls /home/<username>/projects/yii_framework
+ls /home/<username>/projects/www.posdev
 
 # www.posdev 應該包含商戶目錄（dev, xxoo 等）
-ls D:/projects/www.posdev
+ls /home/<username>/projects/www.posdev
 ```
 
 #### 2. 設定 .env 環境變數
@@ -121,24 +108,18 @@ ls D:/projects/www.posdev
 # 複製範本
 cp .env.example .env
 
-# 編輯 .env，確認路徑正確
-# Windows 範例（使用 / 分隔符）：
-PROJECT_PATH=D:/projects/pos_dev
-YII_FRAMEWORK_PATH=D:/projects/yii_framework
-WEB_ROOT_PATH=D:/projects/www.posdev
-
-# macOS 範例：
-PROJECT_PATH=/Users/<你>/projects/pos_dev
-YII_FRAMEWORK_PATH=/Users/<你>/projects/yii_framework
-WEB_ROOT_PATH=/Users/<你>/projects/www.posdev
+# 編輯 .env，確認路徑正確（WSL2 原生路徑）：
+PROJECT_PATH=/home/<username>/projects/pos_dev
+YII_FRAMEWORK_PATH=/home/<username>/projects/yii_framework
+WEB_ROOT_PATH=/home/<username>/projects/www.posdev
 ```
 
 #### 3. 設定資料庫連線（重要！）
 所有商戶配置檔必須將資料庫 host 改為 `mysql`：
 
 **修改檔案：**
-- `D:/projects/www.posdev/dev/protected/config/dev.php`（或 db.php）
-- `D:/projects/www.posdev/xxoo/protected/config/xxoo.php`
+- `www.posdev/dev/protected/config/dev.php`（或 db.php）
+- `www.posdev/xxoo/protected/config/xxoo.php`
 - 其他商戶的相同檔案
 
 **修改內容：**
@@ -169,12 +150,7 @@ WEB_ROOT_PATH=/Users/<你>/projects/www.posdev
 
 #### 5. 確認 PORT 未被占用
 ```bash
-# 停止 Laragon 或檢查 PORT 占用
-netstat -ano | findstr :80     # Windows
-netstat -ano | findstr :443
-netstat -ano | findstr :3306
-
-# macOS/Linux
+# 檢查 PORT 占用
 lsof -i :80
 lsof -i :443
 lsof -i :3306
@@ -184,27 +160,28 @@ lsof -i :3306
 ```bash
 ls nginx/ssl/
 # 應該有 laragon.crt 和 laragon.key
-# 若不存在，執行 scripts/generate-cert.bat 或 .sh
+# 若不存在，執行 bash scripts/generate-cert.sh
 ```
 
-#### 7. 確認 Docker Desktop 正在運行
+#### 7. 確認 Docker CE 正在運行
 ```bash
 docker ps  # 應該顯示容器列表（可能為空）
+systemctl status docker  # 確認 Docker 服務正在執行
 ```
 
 ## 啟動
 ```bash
 # 建置並啟動
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 
 # 查看狀態
-docker-compose ps
+docker compose ps
 
 # 追 logs
-docker-compose logs -f nginx
-docker-compose logs -f php
-docker-compose logs -f mysql
+docker compose logs -f nginx
+docker compose logs -f php
+docker compose logs -f mysql
 ```
 
 ## 服務存取
@@ -213,29 +190,22 @@ docker-compose logs -f mysql
 - MySQL：`mysql://root@localhost:3306/pos_dev`（容器內用 host `mysql`）
 
 ## 產生自簽憑證
-- Windows：`scripts\generate-cert.bat [domain]`（預設 `www.posdev.test`；輸出到 `nginx/ssl/laragon.{crt,key}`）
-- macOS/WSL/Linux：`bash scripts/generate-cert.sh [domain]`
-- 產生後需 `docker-compose restart nginx`；瀏覽器仍需將 `nginx/ssl/laragon.crt` 加入信任。
+```bash
+bash scripts/generate-cert.sh [domain]  # 預設 www.posdev.test；輸出到 nginx/ssl/laragon.{crt,key}
+```
+- 產生後需 `docker compose restart nginx`；瀏覽器仍需將 `nginx/ssl/laragon.crt` 加入信任。
 
 ## 切換 PHP / MySQL 版本
 
 ### 互動式模式（推薦）
 無參數執行，從選單選擇版本（避免輸入錯誤）：
 ```bash
-# Windows
-scripts\switch-version.bat
-
-# macOS/WSL/Linux
 bash scripts/switch-version.sh
 ```
 
 ### 命令列模式（含驗證）
 直接指定版本（會自動驗證版本是否支援）：
 ```bash
-# Windows
-scripts\switch-version.bat 80 8.0
-
-# macOS/WSL/Linux
 bash scripts/switch-version.sh 80 8.0
 ```
 
@@ -246,7 +216,7 @@ bash scripts/switch-version.sh 80 8.0
 ### 套用變更
 修改版本後需重啟容器：
 ```bash
-docker-compose down && docker-compose up -d --build
+docker compose down && docker compose up -d --build
 ```
 
 ## 程式碼覆蓋率
@@ -294,20 +264,20 @@ docker exec -i pos_php php --ri xdebug | grep -E "version|mode|coverage"
   - 確認 `protected/config/dev3.php` 的 DB host 指向 `mysql`，帳密與 MySQL 容器一致。
   - 確認 MySQL 容器有對應 DB/使用者。
 - 找不到 `../yii_framework`：請確保 `.env` 路徑與 `docker-compose.yml` 的卷掛載一致（如上預設）。
-- macOS 掛載失敗：檢查 Docker Desktop 的檔案共用權限與 Rosetta 設定（Apple Silicon）。
+- 掛載失敗：確認專案位於 WSL2 原生路徑（`/home/<username>/projects/`），並確認 Docker CE 服務正在執行。
 
 ## 停止 / 清理
 ```bash
-docker-compose down          # 停止並移除容器
-docker-compose down -v       # 同時移除 volumes（會刪資料庫）
+docker compose down          # 停止並移除容器
+docker compose down -v       # 同時移除 volumes（會刪資料庫）
 docker system prune -f       # 清理未使用資源
 ```
 
 ## MySQL 初始化
 - 本專案不追蹤初始化 SQL，請自行準備資料庫：
-  - 建立資料庫與使用者（可在容器內 `docker-compose exec mysql mysql -uroot` 手動執行）。
-  - 若有匯入檔，放在 `mysql/init/`（未版控）後 `docker-compose down && docker-compose up -d` 會自動匯入。
-  - 也可在容器內直接匯入：`docker-compose exec -T mysql mysql -uroot < your.sql`
+  - 建立資料庫與使用者（可在容器內 `docker compose exec mysql mysql -uroot` 手動執行）。
+  - 若有匯入檔，放在 `mysql/init/`（未版控）後 `docker compose down && docker compose up -d` 會自動匯入。
+  - 也可在容器內直接匯入：`docker compose exec -T mysql mysql -uroot < your.sql`
 - 調整 `.env` 確認 `MYSQL_DATABASE` / `MYSQL_USER` / `MYSQL_PASSWORD` 與你的初始化腳本一致。
 
 ## 驗證安裝
@@ -316,7 +286,7 @@ docker system prune -f       # 清理未使用資源
 
 ### 1. 檢查容器狀態
 ```bash
-docker-compose ps
+docker compose ps
 
 # 應該顯示 3 個容器都是 Up 狀態：
 # pos_nginx    Up    0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp
@@ -326,7 +296,7 @@ docker-compose ps
 
 ### 2. 檢查 Nginx 配置
 ```bash
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # 應該顯示：
 # nginx: configuration file /etc/nginx/nginx.conf test is successful
@@ -334,14 +304,14 @@ docker-compose exec nginx nginx -t
 
 ### 3. 檢查 PHP 版本
 ```bash
-docker-compose exec php php -v
+docker compose exec php php -v
 
 # 應該顯示當前 .env 設定的 PHP 版本（例如 PHP 5.6.40）
 ```
 
 ### 4. 檢查 MySQL 連線
 ```bash
-docker-compose exec mysql mysql -uroot -e "SHOW DATABASES;"
+docker compose exec mysql mysql -uroot -e "SHOW DATABASES;"
 
 # 應該看到 pos_dev_2（或您設定的資料庫名稱）
 ```
@@ -349,7 +319,7 @@ docker-compose exec mysql mysql -uroot -e "SHOW DATABASES;"
 ### 5. 檢查檔案掛載
 ```bash
 # 進入 PHP 容器
-docker-compose exec php bash
+docker compose exec php bash
 
 # 檢查目錄結構
 ls -la /var/www/www.posdev/
@@ -387,13 +357,13 @@ docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
 ### 8. 檢查日誌
 ```bash
 # 檢查 Nginx 錯誤日誌
-docker-compose logs nginx | tail -20
+docker compose logs nginx | tail -20
 
 # 檢查 PHP 錯誤日誌
-docker-compose logs php | tail -20
+docker compose logs php | tail -20
 
 # 檢查 MySQL 錯誤日誌
-docker-compose logs mysql | tail -20
+docker compose logs mysql | tail -20
 
 # 應該沒有嚴重錯誤（ERROR 或 CRITICAL）
 ```
@@ -404,7 +374,7 @@ docker-compose logs mysql | tail -20
 |---------|---------|---------|
 | 容器無法啟動 | PORT 被占用 | 停止 Laragon 或其他服務 |
 | 404 錯誤 | Nginx 配置或路徑掛載錯誤 | 檢查 .env 路徑設定 |
-| 商戶目錄 404 (dev3, 186 等) | docker-compose.yml 缺少該商戶的個別掛載 | 在 nginx 和 php 的 volumes 區段加入 `${WEB_ROOT_PATH}/<dir>:/var/www/www.posdev/<dir>:cached` |
+| 商戶目錄 404 (dev3, 186 等) | docker-compose.yml 缺少該商戶的個別掛載 | 在 nginx 和 php 的 volumes 區段加入 `${WEB_ROOT_PATH}/<dir>:/var/www/www.posdev/<dir>` |
 | zdnStorage 權限錯誤 | 新建目錄權限不正確 | 等待 60 秒（背景修復程序會自動修正），或重啟容器 |
 | 500 錯誤 | PHP 錯誤或資料庫連線失敗 | 檢查日誌，確認 DB host=mysql |
 | 找不到 yii_framework | 路徑掛載錯誤 | 確認 .env 中 YII_FRAMEWORK_PATH |
@@ -415,7 +385,7 @@ docker-compose logs mysql | tail -20
 ## 問題回報
 
 如遇問題，請提供以下資訊：
-1. `docker-compose ps` 輸出
-2. `docker-compose logs [服務名]` 錯誤訊息
+1. `docker compose ps` 輸出
+2. `docker compose logs [服務名]` 錯誤訊息
 3. `.env` 配置（移除敏感資訊）
 4. 錯誤截圖或瀏覽器開發者工具 Console 訊息

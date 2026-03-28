@@ -48,63 +48,44 @@ PHP_VERSION=81
 ### 2. 重新建構容器
 ```bash
 # 建構當前版本
-docker-compose build php
+docker compose build php
 
 # 或指定版本建構
-PHP_VERSION=74 docker-compose build php
+PHP_VERSION=74 docker compose build php
 ```
 
 ### 3. 檢查版本
 ```bash
 # 檢查 Composer 版本
-docker-compose run --rm php composer --version
+docker compose run --rm php composer --version
 
 # 檢查 PHPUnit 版本
-docker-compose run --rm php phpunit --version
+docker compose run --rm php phpunit --version
 
 # 檢查 PHP 版本
-docker-compose run --rm php php --version
+docker compose run --rm php php --version
 ```
 
 ### 4. 執行單元測試
 ```bash
 # 在容器內執行測試
-docker-compose exec php phpunit
+docker compose exec php phpunit
 
 # 執行特定測試檔案
-docker-compose exec php phpunit /var/www/tests/Unit/ExampleTest.php
+docker compose exec php phpunit /var/www/tests/Unit/ExampleTest.php
 
 # 執行測試並生成覆蓋率
-docker-compose exec php phpunit --coverage-html coverage/
+docker compose exec php phpunit --coverage-html coverage/
 ```
 
-## 🧪 自動化測試
+## 自動化測試
 
-### Windows 使用者
-
-**PowerShell (推薦)**:
-```powershell
-# 執行 PowerShell 腳本
-.\scripts\test-versions.ps1
-
-# 如遇到執行原則錯誤
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\scripts\test-versions.ps1
-```
-
-**命令提示字元**:
-```cmd
-# 執行批次檔
-scripts\test-versions.bat
-```
-
-### Linux/Mac 使用者
 ```bash
-# 賦予執行權限
-chmod +x scripts/switch-version.sh
+# 測試所有 PHP 版本
+bash scripts/test-versions.sh
 
-# 執行切換腳本
-./scripts/switch-version.sh
+# 互動式切換版本
+bash scripts/switch-version.sh
 ```
 
 此腳本會自動測試所有 PHP 版本的 Composer 和 PHPUnit 安裝狀態。詳細測試指南請參考 [docs/TEST_GUIDE.md](docs/TEST_GUIDE.md)。
@@ -132,10 +113,9 @@ docker_run/
 │   ├── PHP_COMPOSER_PHPUNIT_SETUP.md  # 📖 本文件
 │   └── TEST_GUIDE.md           # 📖 測試指南
 └── scripts/
-    ├── test-versions.bat       # 🧪 測試腳本 (Windows CMD)
-    ├── test-versions.ps1       # 🧪 測試腳本 (Windows PowerShell)
-    ├── switch-version.bat      # 🔄 PHP 版本切換腳本 (Windows)
-    └── switch-version.sh       # 🔄 PHP 版本切換腳本 (Linux/Mac)
+    ├── test-versions.sh        # 測試腳本（所有 PHP 版本）
+    ├── switch-version.sh       # PHP 版本切換腳本
+    └── generate-cert.sh        # SSL 憑證生成腳本
 ```
 
 ## 🔧 技術實作細節
@@ -201,23 +181,23 @@ PHPUnit 10.5.59 by Sebastian Bergmann and contributors.
 
 1. **第一次使用**: 需要重新建構對應的 PHP 容器
    ```bash
-   docker-compose build php
+   docker compose build php
    ```
 
 2. **版本切換**: 修改 `.env` 的 `PHP_VERSION` 後需重新建構
    ```bash
-   PHP_VERSION=81 docker-compose build php
+   PHP_VERSION=81 docker compose build php
    ```
 
 3. **快取問題**: 如遇到版本不正確，使用 `--no-cache` 強制重建
    ```bash
-   docker-compose build --no-cache php
+   docker compose build --no-cache php
    ```
 
 4. **權限問題**: PHPUnit 生成報告時可能需要寫入權限
    ```bash
    # 在容器內調整權限
-   docker-compose exec php chown -R www-data:www-data /var/www
+   docker compose exec php chown -R www-data:www-data /var/www
    ```
 
 ## 🆘 疑難排解
@@ -225,26 +205,26 @@ PHPUnit 10.5.59 by Sebastian Bergmann and contributors.
 ### Q: PHPUnit 找不到指令
 ```bash
 # 檢查符號連結
-docker-compose exec php ls -la /usr/local/bin/phpunit
+docker compose exec php ls -la /usr/local/bin/phpunit
 
 # 手動建立符號連結
-docker-compose exec php ln -sf /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
+docker compose exec php ln -sf /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
 ```
 
 ### Q: Composer 版本不符
 ```bash
 # 檢查實際版本
-docker-compose exec php composer --version
+docker compose exec php composer --version
 
 # 重新建構容器
-docker-compose build --no-cache php
+docker compose build --no-cache php
 ```
 
 ### Q: 測試執行失敗
 ```bash
 # 確認 PHP 版本
-docker-compose exec php php --version
+docker compose exec php php --version
 
 # 確認 PHPUnit 版本相容性
-docker-compose exec php phpunit --version
+docker compose exec php phpunit --version
 ```

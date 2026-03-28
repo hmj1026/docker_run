@@ -78,20 +78,20 @@ phpunit --version
 php --version
 ```
 
-### 使用 docker-compose 檢查
+### 使用 docker compose 檢查
 
 ```bash
 # 檢查 PHP 5.6 環境
-docker-compose run --rm php56 composer --version
-docker-compose run --rm php56 phpunit --version
+docker compose run --rm php56 composer --version
+docker compose run --rm php56 phpunit --version
 
 # 檢查 PHP 7.4 環境
-docker-compose run --rm php74 composer --version
-docker-compose run --rm php74 phpunit --version
+docker compose run --rm php74 composer --version
+docker compose run --rm php74 phpunit --version
 
 # 檢查 PHP 8.1 環境
-docker-compose run --rm php81 composer --version
-docker-compose run --rm php81 phpunit --version
+docker compose run --rm php81 composer --version
+docker compose run --rm php81 phpunit --version
 ```
 
 ### 執行單元測試
@@ -102,8 +102,8 @@ docker-compose run --rm php81 phpunit --version
 # 在容器內直接執行
 phpunit
 
-# 透過 docker-compose 執行（PHP 7.4 範例）
-docker-compose exec php74 phpunit /var/www/tests
+# 透過 docker compose 執行（PHP 7.4 範例）
+docker compose exec php74 phpunit /var/www/tests
 
 # 執行特定測試檔案
 phpunit tests/Unit/ExampleTest.php
@@ -118,16 +118,16 @@ phpunit --coverage-html coverage/
 
 ```bash
 # 使用 PHP 5.6 執行測試（PHPUnit 5.7）
-PHP_VERSION=56 docker-compose exec php phpunit
+PHP_VERSION=56 docker compose exec php phpunit
 
 # 使用 PHP 7.4 執行測試（PHPUnit 9.6）
-PHP_VERSION=74 docker-compose exec php phpunit
+PHP_VERSION=74 docker compose exec php phpunit
 
 # 使用 PHP 8.1 執行測試（PHPUnit 10.5）
-PHP_VERSION=81 docker-compose exec php phpunit
+PHP_VERSION=81 docker compose exec php phpunit
 
 # 使用 PHP 8.3 執行測試（PHPUnit 11）
-PHP_VERSION=83 docker-compose exec php phpunit
+PHP_VERSION=83 docker compose exec php phpunit
 ```
 
 ## 設計理念
@@ -165,15 +165,15 @@ PHP_VERSION=83 docker-compose exec php phpunit
 
 ```bash
 # 重新建構單一版本
-PHP_VERSION=56 docker-compose build php
+PHP_VERSION=56 docker compose build php
 
 # 重新建構所有 PHP 版本（需要逐一切換）
 for v in 56 74 80 81 82 83; do
-  PHP_VERSION=$v docker-compose build php
+  PHP_VERSION=$v docker compose build php
 done
 
 # 強制重新建構（不使用快取）
-PHP_VERSION=74 docker-compose build --no-cache php
+PHP_VERSION=74 docker compose build --no-cache php
 ```
 
 ## 相容性矩陣
@@ -197,28 +197,28 @@ PHP_VERSION=74 docker-compose build --no-cache php
 
 ### PHP 5.6 ✅ (2025-12-03)
 ```bash
-$ PHP_VERSION=56 docker-compose run --rm php composer --version
+$ PHP_VERSION=56 docker compose run --rm php composer --version
 Composer version 1.10.27 2023-09-29 10:50:23
 
-$ PHP_VERSION=56 docker-compose run --rm php phpunit --version
+$ PHP_VERSION=56 docker compose run --rm php phpunit --version
 PHPUnit 5.7.27 by Sebastian Bergmann and contributors.
 ```
 
 ### PHP 7.4 ✅ (2025-12-03)
 ```bash
-$ PHP_VERSION=74 docker-compose run --rm php composer --version
+$ PHP_VERSION=74 docker compose run --rm php composer --version
 Composer version 2.2.24 2024-06-10 22:51:52
 
-$ PHP_VERSION=74 docker-compose run --rm php phpunit --version
+$ PHP_VERSION=74 docker compose run --rm php phpunit --version
 PHPUnit 9.6.30 by Sebastian Bergmann and contributors.
 ```
 
 ### PHP 8.1 ✅ (2025-12-03)
 ```bash
-$ PHP_VERSION=81 docker-compose run --rm php composer --version
+$ PHP_VERSION=81 docker compose run --rm php composer --version
 Composer version 2.8.12 2025-09-19 13:41:59
 
-$ PHP_VERSION=81 docker-compose run --rm php phpunit --version
+$ PHP_VERSION=81 docker compose run --rm php phpunit --version
 PHPUnit 10.5.59 by Sebastian Bergmann and contributors.
 ```
 
@@ -227,26 +227,26 @@ PHPUnit 10.5.59 by Sebastian Bergmann and contributors.
 ### PHPUnit 找不到
 ```bash
 # 確認 PHPUnit 是否存在
-docker-compose exec php which phpunit
+docker compose exec php which phpunit
 
 # 檢查執行權限
-docker-compose exec php ls -la /usr/local/bin/phpunit
+docker compose exec php ls -la /usr/local/bin/phpunit
 
 # PHP 5.6 重新下載 PHAR
-docker-compose exec php curl -L https://phar.phpunit.de/phpunit-5.7.27.phar -o /usr/local/bin/phpunit
-docker-compose exec php chmod +x /usr/local/bin/phpunit
+docker compose exec php curl -L https://phar.phpunit.de/phpunit-5.7.27.phar -o /usr/local/bin/phpunit
+docker compose exec php chmod +x /usr/local/bin/phpunit
 
 # PHP 7.4+ 重建符號連結
-docker-compose exec php ln -sf /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
+docker compose exec php ln -sf /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
 ```
 
 ### Composer 版本不符
 ```bash
 # 檢查實際版本
-docker-compose exec php composer --version
+docker compose exec php composer --version
 
 # 重新建構容器確保版本正確
-PHP_VERSION=74 docker-compose build --no-cache php
+PHP_VERSION=74 docker compose build --no-cache php
 ```
 
 ### PHP 5.6 Composer 無法安裝套件
@@ -258,8 +258,8 @@ PHP_VERSION=74 docker-compose build --no-cache php
 ### 權限問題
 ```bash
 # PHPUnit 可能需要寫入權限（如生成覆蓋率報告）
-docker-compose exec php chmod -R 755 /var/www/tests
-docker-compose exec php chown -R www-data:www-data /var/www
+docker compose exec php chmod -R 755 /var/www/tests
+docker compose exec php chown -R www-data:www-data /var/www
 ```
 
 ## PHP 5.6 限制說明

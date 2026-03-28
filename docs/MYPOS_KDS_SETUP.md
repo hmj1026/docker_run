@@ -44,23 +44,24 @@
 
 ### 軟體需求
 
-- **Docker Desktop** (Windows 10/11 + WSL2 或 macOS 12+)
-- **Git** (用於專案版控)
-- **文字編輯器** (VS Code 推薦)
+- **Docker CE + Compose v2 plugin**（安裝在 WSL2 內部）
+- **WSL2**（已啟用 systemd）
+- **Git**（用於專案版控）
+- **文字編輯器**（VS Code 推薦）
 
 ### 專案目錄結構
 
 請確保以下專案目錄已正確配置：
 
 ```
-E:\projects\
-├── docker_run\              # Docker 環境設定 (本儲存庫)
-├── mypos_kds\               # MyPOS KDS Laravel 專案
-├── pos_dev\                 # POS 主專案
-├── pos_oklahoma\            # POS Oklahoma
-├── conductor_202_test\      # Conductor 測試
-├── yii_framework\           # Yii 1.1 框架
-└── www.posdev\              # Web 根目錄 (含商戶入口)
+/home/<username>/projects/
+├── docker_run/              # Docker 環境設定 (本儲存庫)
+├── mypos_kds/               # MyPOS KDS Laravel 專案
+├── pos_dev/                 # POS 主專案
+├── pos_oklahoma/            # POS Oklahoma
+├── conductor_202_test/      # Conductor 測試
+├── yii_framework/           # Yii 1.1 框架
+└── www.posdev/              # Web 根目錄 (含商戶入口)
 ```
 
 ---
@@ -70,25 +71,25 @@ E:\projects\
 ### 1. 複製環境變數設定
 
 ```bash
-cd E:\projects\docker_run
+cd /home/<username>/projects/docker_run
 cp .env.example .env
 ```
 
 ### 2. 編輯 `.env` 確認路徑
 
 ```ini
-# E:\projects\docker_run\.env
+# /home/<username>/projects/docker_run/.env
 
-# 專案路徑映射
-PROJECT_PATH=E:/projects/pos_dev
-MYPOS_KDS_PATH=E:/projects/mypos_kds
-YII_FRAMEWORK_PATH=E:/projects/yii_framework
-WEB_ROOT_PATH=E:/projects/www.posdev
+# 專案路徑映射（WSL2 原生路徑）
+PROJECT_PATH=/home/<username>/projects/pos_dev
+MYPOS_KDS_PATH=/home/<username>/projects/mypos_kds
+YII_FRAMEWORK_PATH=/home/<username>/projects/yii_framework
+WEB_ROOT_PATH=/home/<username>/projects/www.posdev
 ```
 
 ### 3. 設定 hosts 檔案
 
-以**管理員權限**編輯 `C:\Windows\System32\drivers\etc\hosts`：
+編輯 `/etc/hosts`（需 sudo）：
 
 ```
 127.0.0.1 www.posdev.test
@@ -97,7 +98,7 @@ WEB_ROOT_PATH=E:/projects/www.posdev
 
 ### 4. 設定 mypos_kds 的 .env
 
-編輯 `E:\projects\mypos_kds\.env`：
+編輯 `/home/<username>/projects/mypos_kds/.env`：
 
 ```ini
 APP_NAME=MyPOS智助點餐
@@ -123,14 +124,14 @@ DB_PASSWORD=
 ### 5. 啟動 Docker 環境
 
 ```bash
-cd E:\projects\docker_run
+cd /home/<username>/projects/docker_run
 
 # 建置並啟動容器
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 
 # 查看容器狀態
-docker-compose ps
+docker compose ps
 ```
 
 ### 6. 訪問系統
@@ -143,11 +144,12 @@ docker-compose ps
 
 ### Step 1: Docker 環境驗證
 
-確認 Docker Desktop 正在運行：
+確認 Docker CE 正在運行：
 
 ```bash
+systemctl status docker
 docker --version
-docker-compose --version
+docker compose --version
 ```
 
 ### Step 2: SSL 憑證確認
@@ -155,16 +157,14 @@ docker-compose --version
 確認 SSL 憑證存在：
 
 ```bash
-ls E:\projects\docker_run\nginx\ssl\
+ls nginx/ssl/
 # 應該看到 laragon.crt 和 laragon.key
 ```
 
 若不存在，執行：
 
-```powershell
-.\scripts\generate-cert.ps1
-# 或
-scripts\generate-cert.bat
+```bash
+bash scripts/generate-cert.sh
 ```
 
 ### Step 3: Nginx 配置說明
@@ -208,15 +208,15 @@ location ~ ^/([^/]+)/public(/.*)?$ {
 cp your-database.sql E:\projects\docker_run\mysql\init\
 
 # 重新啟動容器（會自動執行 init 目錄中的 SQL）
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 #### 方法 B：手動建立資料庫
 
 ```bash
 # 進入 MySQL 容器
-docker-compose exec mysql mysql -uroot
+docker compose exec mysql mysql -uroot
 
 # 在 MySQL 中執行
 CREATE DATABASE IF NOT EXISTS pos_dev_2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -231,7 +231,7 @@ FLUSH PRIVILEGES;
 
 ```bash
 # 進入 PHP 容器
-docker-compose exec php bash
+docker compose exec php bash
 
 # 切換到專案目錄
 cd /var/www/www.posdev/mypos_kds
@@ -257,7 +257,7 @@ exit
 ### 1. 檢查容器狀態
 
 ```bash
-docker-compose ps
+docker compose ps
 
 # 預期輸出：
 # pos_nginx    Up    0.0.0.0:80->80, 0.0.0.0:443->443
@@ -268,7 +268,7 @@ docker-compose ps
 ### 2. 檢查 Nginx 配置
 
 ```bash
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # 預期輸出：
 # nginx: configuration file /etc/nginx/nginx.conf test is successful
@@ -277,7 +277,7 @@ docker-compose exec nginx nginx -t
 ### 3. 檢查 PHP 版本
 
 ```bash
-docker-compose exec php php -v
+docker compose exec php php -v
 
 # 預期輸出：
 # PHP 5.6.40 ...
@@ -286,7 +286,7 @@ docker-compose exec php php -v
 ### 4. 測試資料庫連線
 
 ```bash
-docker-compose exec mysql mysql -uroot -e "SHOW DATABASES;"
+docker compose exec mysql mysql -uroot -e "SHOW DATABASES;"
 
 # 應該看到 pos_dev_2
 ```
@@ -398,7 +398,7 @@ DB_HOST=mysql    # ✅ 正確
 **檢查步驟**：
 ```bash
 # 檢查專案是否正確掛載
-docker-compose exec php ls -la /var/www/www.posdev/mypos_kds/
+docker compose exec php ls -la /var/www/www.posdev/mypos_kds/
 
 # 應該看到 app/, public/, vendor/ 等目錄
 ```
@@ -411,18 +411,18 @@ docker-compose exec php ls -la /var/www/www.posdev/mypos_kds/
 
 1. 查看 Laravel 日誌：
    ```bash
-   docker-compose exec php tail -f /var/www/www.posdev/mypos_kds/storage/logs/laravel.log
+   docker compose exec php tail -f /var/www/www.posdev/mypos_kds/storage/logs/laravel.log
    ```
 
 2. 查看 Nginx 錯誤日誌：
    ```bash
-   docker-compose logs nginx | tail -30
+   docker compose logs nginx | tail -30
    ```
 
 3. 確認 storage 目錄權限：
    ```bash
-   docker-compose exec php chmod -R 777 /var/www/www.posdev/mypos_kds/storage
-   docker-compose exec php chmod -R 777 /var/www/www.posdev/mypos_kds/bootstrap/cache
+   docker compose exec php chmod -R 777 /var/www/www.posdev/mypos_kds/storage
+   docker compose exec php chmod -R 777 /var/www/www.posdev/mypos_kds/bootstrap/cache
    ```
 
 ---
@@ -434,7 +434,7 @@ docker-compose exec php ls -la /var/www/www.posdev/mypos_kds/
 **解決方案**：
 確認 `docker_run/.env` 中路徑正確：
 ```ini
-YII_FRAMEWORK_PATH=E:/projects/yii_framework
+YII_FRAMEWORK_PATH=/home/<username>/projects/yii_framework
 ```
 
 ---
@@ -486,24 +486,24 @@ YII_FRAMEWORK_PATH=E:/projects/yii_framework
 
 ```bash
 # 啟動容器
-docker-compose up -d
+docker compose up -d
 
 # 停止容器
-docker-compose down
+docker compose down
 
 # 重新建置
-docker-compose build --no-cache
+docker compose build --no-cache
 
 # 查看日誌
-docker-compose logs -f [服務名]
+docker compose logs -f [服務名]
 
 # 進入容器
-docker-compose exec php bash
-docker-compose exec nginx sh
-docker-compose exec mysql bash
+docker compose exec php bash
+docker compose exec nginx sh
+docker compose exec mysql bash
 
 # 重啟單一服務
-docker-compose restart nginx
+docker compose restart nginx
 
 # 清理未使用資源
 docker system prune -f

@@ -52,13 +52,11 @@ docker_run/
 │   ├── TEST_GUIDE.md                   # 測試指南
 │   └── FILE_STRUCTURE.md               # 本文件
 │
-├── 📂 scripts/                     # 🔧 腳本目錄
-│   ├── test-versions.ps1           # PHP 版本測試 (PowerShell)
-│   ├── test-versions.bat           # PHP 版本測試 (CMD)
-│   ├── switch-version.sh           # PHP 版本切換 (Linux/Mac)
-│   ├── switch-version.bat          # PHP 版本切換 (Windows)
-│   ├── generate-cert.sh            # SSL 憑證生成 (Linux/Mac)
-│   └── generate-cert.bat           # SSL 憑證生成 (Windows)
+├── 📂 scripts/                     # 腳本目錄
+│   ├── test-versions.sh            # PHP 版本測試
+│   ├── switch-version.sh           # PHP 版本切換
+│   ├── generate-cert.sh            # SSL 憑證生成
+│   └── php-entrypoint.sh           # PHP 容器啟動腳本
 │
 ├── 📂 logs/                        # 日誌目錄
 │   ├── nginx/                      # Nginx 日誌
@@ -97,14 +95,12 @@ docker_run/
 | `FILE_STRUCTURE.md` | 專案檔案結構說明（本文件） |
 
 ### 腳本目錄 (scripts/)
-| 檔案 | 平台 | 說明 |
-|------|------|------|
-| `test-versions.ps1` | Windows PowerShell | 自動測試所有 PHP 版本（推薦） |
-| `test-versions.bat` | Windows CMD | 自動測試所有 PHP 版本 |
-| `switch-version.sh` | Linux/Mac | PHP 版本切換腳本 |
-| `switch-version.bat` | Windows | PHP 版本切換腳本 |
-| `generate-cert.sh` | Linux/Mac | 生成 SSL 自簽憑證 |
-| `generate-cert.bat` | Windows | 生成 SSL 自簽憑證 |
+| 檔案 | 說明 |
+|------|------|
+| `test-versions.sh` | 自動測試所有 PHP 版本 |
+| `switch-version.sh` | PHP 版本切換腳本 |
+| `generate-cert.sh` | 生成 SSL 自簽憑證 |
+| `php-entrypoint.sh` | PHP 容器啟動腳本（權限修復） |
 
 ---
 
@@ -122,15 +118,12 @@ docker_run/
 👉 閱讀 [docs/TEST_GUIDE.md](TEST_GUIDE.md)
 
 #### 執行測試腳本
-```powershell
-# Windows PowerShell
-.\scripts\test-versions.ps1
+```bash
+# 測試所有版本
+bash scripts/test-versions.sh
 
-# Windows CMD
-scripts\test-versions.bat
-
-# Linux/Mac
-./scripts/switch-version.sh
+# 互動式切換版本
+bash scripts/switch-version.sh
 ```
 
 #### 切換 PHP 版本
@@ -139,7 +132,7 @@ scripts\test-versions.bat
 PHP_VERSION=74  # 可選: 56, 74, 80, 81, 82, 83
 
 # 重新建構
-docker-compose build php
+docker compose build php
 ```
 
 #### 查看實作細節

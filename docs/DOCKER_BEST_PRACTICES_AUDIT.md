@@ -114,7 +114,7 @@
 - PHP 版本選擇明確，並透過 `php/php56`、`php/php74`、`php/php80`、`php/php81`、`php/php82`、`php/php83` 分開 build context。
 - `.env.example` 已明確提供 `NGINX_VERSION=1.24-alpine` 與 `MYSQL_VERSION=5.7` 的預設值，優於直接使用 `latest`。
 - nginx 設定、SSL 檔案、MySQL 設定、初始化腳本與 PHP entrypoint script 多數都以 `:ro` 方式掛載。
-- `docker-compose config -q` 可通過，表示目前 compose 檔案在既有環境下語法正確。
+- `docker compose config -q` 可通過，表示目前 compose 檔案在既有環境下語法正確。
 
 ## 分類結論
 
