@@ -2,15 +2,15 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SQL_FILE="${SQL_FILE:-${ROOT_DIR}/mysql/init/02.zdpos_wanpo_0426.sql}"
-DB_NAME="${DB_NAME:-zdpos_wanpo}"
+SQL_FILE="${SQL_FILE:-${ROOT_DIR}/mysql/init/dump.sql}"
+DB_NAME="${DB_NAME:?DB_NAME must be set (e.g. DB_NAME=mydb bash scripts/import-mysql-dump.sh)}"
 CONTAINER_NAME="${CONTAINER_NAME:-pos_mysql}"
 MYSQL_USER="${MYSQL_USER:-root}"
 MYSQL_PASSWORD="${MYSQL_PASSWORD:-}"
 LOG_DIR="${LOG_DIR:-${ROOT_DIR}/logs/mysql}"
-LOG_FILE="${LOG_FILE:-${LOG_DIR}/import-zdpos-wanpo.log}"
+LOG_FILE="${LOG_FILE:-${LOG_DIR}/import-mysql.log}"
 BACKUP_DIR="${BACKUP_DIR:-${ROOT_DIR}/mysql/init}"
-BACKUP_FILE="${BACKUP_FILE:-${BACKUP_DIR}/02.zdpos_wanpo_0426.sql.bak}"
+BACKUP_FILE="${BACKUP_FILE:-${BACKUP_DIR}/dump.sql.bak}"
 
 mkdir -p "${LOG_DIR}"
 

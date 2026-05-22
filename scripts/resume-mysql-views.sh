@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Resume zdpos_wanpo import: re-create views from the dump's "Final view structure"
-# section. Original import failed at line 60959 because the dump (MySQL 8.0+)
-# uses utf8mb4_0900_ai_ci, which MySQL 5.7 does not support.
+# Resume MySQL dump import: re-create views from the dump's "Final view structure"
+# section. Useful when base tables imported successfully but view creation failed,
+# e.g. because the dump (MySQL 8.0+) uses utf8mb4_0900_ai_ci which MySQL 5.7
+# does not support.
 #
 # Strategy:
-#   1. Drop every existing view in zdpos_wanpo (clears first-pass stubs and the
+#   1. Drop every existing view in ${DB_NAME} (clears first-pass stubs and the
 #      partial Final-pass result).
 #   2. Slice the dump from FINAL_VIEW_START_LINE to EOF.
 #   3. Stream-replace utf8mb4_0900_ai_ci -> utf8mb4_unicode_ci on the fly.
 #   4. Pipe into the MySQL client.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SQL_FILE="${SQL_FILE:-${ROOT_DIR}/mysql/init/02.zdpos_wanpo_0426.sql}"
-DB_NAME="${DB_NAME:-zdpos_wanpo}"
+SQL_FILE="${SQL_FILE:-${ROOT_DIR}/mysql/init/dump.sql}"
+DB_NAME="${DB_NAME:?DB_NAME must be set (e.g. DB_NAME=mydb bash scripts/resume-mysql-views.sh)}"
 CONTAINER_NAME="${CONTAINER_NAME:-pos_mysql}"
 MYSQL_USER="${MYSQL_USER:-root}"
 MYSQL_PASSWORD="${MYSQL_PASSWORD:-}"
 LOG_DIR="${LOG_DIR:-${ROOT_DIR}/logs/mysql}"
-LOG_FILE="${LOG_FILE:-${LOG_DIR}/import-zdpos-wanpo.log}"
+LOG_FILE="${LOG_FILE:-${LOG_DIR}/import-mysql.log}"
 FINAL_VIEW_START_LINE="${FINAL_VIEW_START_LINE:-60572}"
 
 mkdir -p "${LOG_DIR}"
