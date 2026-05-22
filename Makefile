@@ -97,6 +97,30 @@ php-version:
 mysql-version:
 	docker compose exec mysql mysql --version
 
+# ================================================
+# KDS 專用 (mypos-kds-v1) 指令
+# ================================================
+
+# 進入 Node 容器
+node-shell:
+	docker compose exec node sh
+
+# Node 套件安裝 (--legacy-peer-deps 處理 laravel-mix 5/webpack-plugin peer 衝突)
+node-install:
+	docker compose exec node npm install --legacy-peer-deps
+
+# 跑 Jest (用本地 node_modules 中的 jest 27，避免 npx 拉 jest 30)
+kds-jest:
+	docker compose exec node ./node_modules/.bin/jest
+
+# 在 PHP 容器內對 KDS 跑 composer install
+kds-composer-install:
+	docker compose exec php bash -c "cd /var/www/www.posdev/mypos_kds && composer install"
+
+# 在 PHP 容器內對 KDS 跑 PHPUnit
+kds-phpunit:
+	docker compose exec php bash -c "cd /var/www/www.posdev/mypos_kds && phpunit"	
+
 # 清理未使用的映像與 Volume
 clean:
 	docker system prune -f

@@ -163,6 +163,22 @@ services:
       - pos_network
     restart: unless-stopped
 
+  # ================================================
+  # Node.js Service (KDS 前端 build / Jest 測試)
+  # ================================================
+  node:
+    image: node:18-alpine
+    container_name: ${COMPOSE_PROJECT_NAME}_node
+    working_dir: /var/www/www.posdev/mypos_kds
+    volumes:
+      # KDS 專案 (與 nginx/php 同步掛載)
+      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds
+    # 保持容器存活以便 exec 進去跑 npm/jest
+    command: ["tail", "-f", "/dev/null"]
+    networks:
+      - pos_network
+    restart: unless-stopped    
+
 # ================================================
 # Network Configuration
 # ================================================
