@@ -47,7 +47,7 @@ docker_run/
 │   ├── PHP_COMPOSER_PHPUNIT_SETUP.md   # Composer & PHPUnit 配置說明
 │   ├── DOCKER_BEST_PRACTICES_AUDIT.md  # Docker 最佳實務審查結果
 │   ├── VERSION_REFERENCE.md            # 版本對照表與疑難排解
-│   ├── ZDPOS_PATH_AND_BOOTSTRAP.md     # ZDPOS 路徑、入口、路由與設定檔關係
+│   ├── PATH_AND_BOOTSTRAP.md           # 路徑、入口、路由與設定檔關係
 │   ├── IMPLEMENTATION_PLAN.md          # 實作計畫與驗證記錄
 │   ├── TEST_GUIDE.md                   # 測試指南
 │   └── FILE_STRUCTURE.md               # 本文件

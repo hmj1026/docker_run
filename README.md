@@ -84,7 +84,7 @@ Docker 會將以下目錄掛載到容器內：
 - `www.posdev` 下的同名目錄會被 Docker 掛載覆蓋
 - 所有修改在 Host 端的 `/home/<username>/projects/pos_dev` 會即時同步到容器
 - 實際生效來源以 `.env` 為準
-- 關於 WSL / Windows 路徑、`/dev3/` 路由、`main.php` 與 `dev3.php` 的完整關係，請看 [docs/ZDPOS_PATH_AND_BOOTSTRAP.md](docs/ZDPOS_PATH_AND_BOOTSTRAP.md)
+- 關於 WSL / Windows 路徑、`/dev3/` 路由、`main.php` 與 `dev3.php` 的完整關係，請看 [docs/PATH_AND_BOOTSTRAP.md](docs/PATH_AND_BOOTSTRAP.md)
 
 ## Docker 專案結構（本儲存庫）
 
