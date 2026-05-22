@@ -247,11 +247,11 @@ docker compose down && docker compose up -d --build
 
 ```bash
 # Text 報告（快速確認）
-docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
+docker exec -i -w //var/www/www.posdev/<project> pos_php \
   phpunit -c protected/tests/phpunit.xml --coverage-text
 
 # HTML 報告（視覺化）
-docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
+docker exec -i -w //var/www/www.posdev/<project> pos_php \
   phpunit -c protected/tests/phpunit.xml \
   --coverage-html protected/tests/coverage/html
 ```
@@ -370,7 +370,7 @@ docker exec -i pos_php php -m | grep -i xdebug
 # 應顯示：xdebug
 
 # 確認覆蓋率可用（不應出現 "No code coverage driver is available"）
-docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
+docker exec -i -w //var/www/www.posdev/<project> pos_php \
   phpunit -c protected/tests/phpunit-fast.xml --coverage-text 2>&1 | head -5
 ```
 

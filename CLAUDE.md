@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **POSDEV Docker** is a unified local development environment for multiple PHP projects (Yii 1.1 framework and Laravel applications) running in Docker containers. It supports 6 PHP versions (5.6, 7.4, 8.0, 8.1, 8.2, 8.3) with corresponding Composer and PHPUnit installations, enabling developers to test across different PHP versions without reinstalling tools.
 
 ### Key Projects Hosted
-- **zdpos_dev**: Main POS application (Yii 1.1 framework)
-- **zdpos_oklao**: OKL merchant variant
+- **\<project\>**: Main POS application (Yii 1.1 framework)
+- **\<project_variant\>**: OKL merchant variant
 - **conductor_dev**: Community management system
 - **mypos_kds**: Kitchen Display System (Laravel 5.6)
 - **mypos_dev3**: MyPOS variant
@@ -82,13 +82,13 @@ PHP_VERSION=74 docker compose build php --no-cache && docker compose up -d
 docker compose exec php bash
 
 # Run PHPUnit tests
-docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php phpunit -c protected/tests/phpunit.xml
+docker exec -i -w //var/www/www.posdev/<project> pos_php phpunit -c protected/tests/phpunit.xml
 
 # Run specific test suite (unit/integration/functional)
-docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php phpunit -c protected/tests/phpunit.xml --testsuite unit
+docker exec -i -w //var/www/www.posdev/<project> pos_php phpunit -c protected/tests/phpunit.xml --testsuite unit
 
 # Generate coverage report
-docker exec -i -w //var/www/www.posdev/zdpos_dev pos_php \
+docker exec -i -w //var/www/www.posdev/<project> pos_php \
   phpunit -c protected/tests/phpunit.xml \
   --coverage-html protected/tests/coverage/html
 ```
@@ -124,13 +124,13 @@ docker compose exec mysql mysql -uroot -e "SHOW DATABASES;"
 ```php
 // ✅ CORRECT - for all projects
 'db' => [
-    'connectionString' => 'mysql:host=mysql;dbname=zdpos_dev',
+    'connectionString' => 'mysql:host=mysql;dbname=<project>',
     'username' => 'root',
     'password' => '',
 ]
 
 // ❌ WRONG - will fail in Docker
-'connectionString' => 'mysql:host=localhost;dbname=zdpos_dev',
+'connectionString' => 'mysql:host=localhost;dbname=<project>',
 ```
 
 ### .env Path Format
@@ -268,7 +268,7 @@ Add to `/etc/hosts`:
 ## Networking & URLs
 
 **Web access** (https by default):
-- `https://www.posdev.test/dev/` - zdpos_dev
+- `https://www.posdev.test/dev/` - main POS project
 - `https://mypos.posdev.test/` - MyPOS KDS (requires matching hosts entry)
 
 **Container-to-container**: Use service names as hostnames

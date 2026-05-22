@@ -22,7 +22,8 @@ docker exec pos_mysql mysqldump -u root --all-databases \
 ls -lh all-databases.sql
 
 # 1.3 個別資料庫備份（6 個業務庫）
-for db in conductor_bdfy zdpos_186 zdpos_dev_2 zdpos_neiwei zdpos_popcorn zdpos_winelake; do
+# Set LEGACY_DATABASES to the space-separated list of database names to migrate
+for db in ${LEGACY_DATABASES}; do
     docker exec pos_mysql mysqldump -u root --single-transaction --skip-lock-tables "$db" > "${db}.sql"
     echo "${db}: $(ls -lh ${db}.sql | awk '{print $5}')"
 done
@@ -197,13 +198,13 @@ docker compose ps
 
 # 10.2 PHP -> MySQL 連線
 docker exec posdev_php php -r \
-    "new PDO('mysql:host=mysql;dbname=zdpos_dev_2','root',''); echo 'OK';"
+    "new PDO('mysql:host=mysql;dbname=${DB_NAME}','root',''); echo 'OK';"
 
 # 10.3 Nginx 設定
 docker exec posdev_nginx nginx -t
 
 # 10.4 專案檔案可存取
-docker exec posdev_php ls /var/www/www.posdev/zdpos_dev/protected/
+docker exec posdev_php ls /var/www/www.posdev/<project>/protected/
 
 # 10.5 商戶目錄可存取
 for dir in dev3 186 bdfy oklao neiwei popcorn winelake; do
@@ -218,7 +219,7 @@ curl -k https://www.posdev.test/dev3/
 make php-version
 
 # 10.8 PHPUnit 單元測試
-docker exec -i -w /var/www/www.posdev/zdpos_dev posdev_php \
+docker exec -i -w /var/www/www.posdev/<project> posdev_php \
     phpunit -c protected/tests/phpunit.xml --testsuite unit
 
 # 10.9 Make 指令
