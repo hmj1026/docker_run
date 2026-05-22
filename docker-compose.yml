@@ -173,6 +173,8 @@ services:
     volumes:
       # KDS 專案 (與 nginx/php 同步掛載)
       - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds
+      # KDS dev3 / 組織版 v2 (使用 MYPOS_DEV3_PATH 切換 v2/dev3)
+      - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3
     # 保持容器存活以便 exec 進去跑 npm/jest
     command: ["tail", "-f", "/dev/null"]
     networks:
