@@ -37,7 +37,7 @@ git diff --cached
 
 #### 分群依據（優先順序）
 
-| 優先級 | 維度 | 範例 (符合 zdpos_dev) |
+| 優先級 | 維度 | 範例 (符合 example_project) |
 |--------|------|------|
 | 1 | **專案設定 / 核心與 AI 規則** | `composer.json`, `protected/config/*`, `.gitignore`, `CLAUDE.md`, `GEMINI.md`, `*.md` 在根目錄 |
 | 2 | **資料表異動 (Migration)** | `protected/migrations/*` |

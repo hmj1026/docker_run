@@ -9,3 +9,12 @@ nginx/ssl/*.crt
 nginx/ssl/*.key
 mysql/init/*
 !mysql/init/.gitkeep
+
+.hyperweave/
+
+# Auto-generated session files
+AGENTS.md
+compact-notes/
+
+# Script backups
+*.sh.bak
