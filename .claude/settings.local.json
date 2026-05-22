@@ -15,7 +15,9 @@
       "Bash(PHP_VERSION=81 docker-compose build:*)",
       "Bash(PHP_VERSION=81 docker-compose run:*)",
       "Bash(PHP_VERSION=56 docker-compose build:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(openspec list *)",
+      "Bash(openspec status *)"
     ],
     "deny": [],
     "ask": []
