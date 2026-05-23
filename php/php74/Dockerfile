@@ -63,10 +63,10 @@ RUN docker-php-ext-install \
     intl
 
 # ================================================
-# 安裝 Xdebug 3.x (PHP 7.4+ 相容版本)
+# 安裝 Xdebug 3.1.6 (PHP 7.4 最後相容版本; Xdebug 3.2+ 要求 PHP 8.0+)
 # 用於程式碼覆蓋率報告 (phpunit --coverage-*)
 # ================================================
-RUN pecl install xdebug && \
+RUN pecl install xdebug-3.1.6 && \
     docker-php-ext-enable xdebug
 
 RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \

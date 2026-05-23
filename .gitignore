@@ -18,3 +18,4 @@ compact-notes/
 
 # Script backups
 *.sh.bak
+docker-compose.override.yml
