@@ -23,6 +23,7 @@ services:
       - ${WEB_ROOT_PATH}:/var/www/www.posdev
       # 子專案目錄覆蓋掛載
       - ${PROJECT_PATH}:${PROJECT_CONTAINER_PATH}
+      - ${PROJECT_SECONDARY_PATH}:${PROJECT_SECONDARY_CONTAINER_PATH}
       - ${PROJECT_OKL_PATH}:${PROJECT_OKL_CONTAINER_PATH}
       - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
       - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
@@ -74,6 +75,7 @@ services:
       - ${WEB_ROOT_PATH}:/var/www/www.posdev
       # 子專案目錄覆蓋掛載
       - ${PROJECT_PATH}:${PROJECT_CONTAINER_PATH}
+      - ${PROJECT_SECONDARY_PATH}:${PROJECT_SECONDARY_CONTAINER_PATH}
       - ${PROJECT_OKL_PATH}:${PROJECT_OKL_CONTAINER_PATH}
       - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
       - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
