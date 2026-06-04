@@ -32,6 +32,7 @@ services:
       - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3
       # 商戶入口目錄（個別掛載確保子目錄正確覆蓋父掛載）
       - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3
+      - ${WEB_ROOT_PATH}/dev4:/var/www/www.posdev/dev4
       - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186
       - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy
       - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao
@@ -84,6 +85,7 @@ services:
       - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3
       # 商戶入口目錄（個別掛載確保子目錄正確覆蓋父掛載）
       - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3
+      - ${WEB_ROOT_PATH}/dev4:/var/www/www.posdev/dev4
       - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186
       - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy
       - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao
