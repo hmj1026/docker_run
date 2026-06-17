@@ -39,6 +39,7 @@ services:
       - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei
       - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn
       - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake
+      - ${WEB_ROOT_PATH}/oklao2:/var/www/www.posdev/oklao2
       # Notifier 通知服務專案
       - ${NOTIFIER_PATH}:/var/www/notifier
       # 日誌輸出
@@ -92,6 +93,7 @@ services:
       - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei
       - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn
       - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake
+      - ${WEB_ROOT_PATH}/oklao2:/var/www/www.posdev/oklao2
       # Notifier 通知服務專案
       - ${NOTIFIER_PATH}:/var/www/notifier
       # 日誌輸出
