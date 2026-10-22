@@ -67,6 +67,7 @@ RUN docker-php-ext-install \
 # ================================================
 # 舊版 pecl 已無法讀取 pecl.php.net REST 資訊，改為直接下載 tarball 安裝（固定 3.4.7：支援 PHP 8.0 - 8.4）
 RUN curl -fsSL -o /tmp/xdebug-3.4.7.tgz https://pecl.php.net/get/xdebug-3.4.7.tgz && \
+    echo "7592923501e3fdb9741ad35b90e08fc6b3c5dd31eadc4c83b7b3c9dda0627b24  /tmp/xdebug-3.4.7.tgz" | sha256sum -c - && \
     pecl install /tmp/xdebug-3.4.7.tgz && \
     rm -f /tmp/xdebug-3.4.7.tgz && \
     docker-php-ext-enable xdebug
@@ -102,6 +103,8 @@ RUN echo "[www]" > /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.max_requests = 500" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "; CVE-2026-109618/109619 緩解：pool 層級鎖定，應用程式無法 ini_set 覆寫" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "php_admin_value[memory_limit] = -1" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_value[post_max_size] = 32M" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_value[upload_max_filesize] = 30M" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "php_admin_flag[session.upload_progress.enabled] = off" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # 建立日誌目錄
