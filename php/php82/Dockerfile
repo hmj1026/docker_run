@@ -90,7 +90,10 @@ RUN echo "[www]" > /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.start_servers = 10" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.min_spare_servers = 5" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.max_spare_servers = 20" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
-    echo "pm.max_requests = 500" >> /usr/local/etc/php-fpm.d/zz-docker.conf
+    echo "pm.max_requests = 500" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "; CVE-2026-109618/109619 緩解：pool 層級鎖定，應用程式無法 ini_set 覆寫" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_value[memory_limit] = -1" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_flag[session.upload_progress.enabled] = off" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # 建立日誌目錄
 RUN mkdir -p /var/log/php && \
