@@ -2,7 +2,8 @@
 # PHP 8.0 Dockerfile for POS
 # 基於 Debian Bullseye
 # ================================================
-FROM php:8.3-fpm-bookworm
+# 固定 8.3.36：修補 CVE-2026-109618 / CVE-2026-109619 (php.net 2026-10-21)
+FROM php:8.3.36-fpm-bookworm
 
 # 設定環境變數
 ARG PHP_MEMORY_LIMIT=512M
@@ -89,7 +90,10 @@ RUN echo "[www]" > /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.start_servers = 10" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.min_spare_servers = 5" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.max_spare_servers = 20" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
-    echo "pm.max_requests = 500" >> /usr/local/etc/php-fpm.d/zz-docker.conf
+    echo "pm.max_requests = 500" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "; CVE-2026-109618/109619 緩解：pool 層級鎖定，應用程式無法 ini_set 覆寫" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_value[memory_limit] = -1" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_flag[session.upload_progress.enabled] = off" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # 建立日誌目錄
 RUN mkdir -p /var/log/php && \
