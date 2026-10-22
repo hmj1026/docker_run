@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**POSDEV Docker** is a unified local development environment for multiple PHP projects (Yii 1.1 framework and Laravel applications) running in Docker containers. It supports 6 PHP versions (5.6, 7.4, 8.0, 8.1, 8.2, 8.3) with corresponding Composer and PHPUnit installations, enabling developers to test across different PHP versions without reinstalling tools.
+**POSDEV Docker** is a unified local development environment for multiple PHP projects (Yii 1.1 framework and Laravel applications) running in Docker containers. It supports 8 PHP versions (5.6, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5) with corresponding Composer and PHPUnit installations, enabling developers to test across different PHP versions without reinstalling tools.
 
 ### Key Projects Hosted
 - **\<project\>**: Main POS application (Yii 1.1 framework)
@@ -171,7 +171,7 @@ lsof -i :3306
 
 | Directory | Purpose |
 |-----------|---------|
-| `/php/php{56,74,80,81,82,83}/` | PHP Dockerfile & php.ini for each version |
+| `/php/php{56,74,80,81,82,83,84,85}/` | PHP Dockerfile & php.ini for each version |
 | `/nginx/conf.d/` | Nginx virtual host configs |
 | `/nginx/ssl/` | SSL certificates (self-signed) |
 | `/mysql/conf.d/` | MySQL configuration |
@@ -195,6 +195,8 @@ Each PHP version has pre-installed Composer and PHPUnit:
 | 8.1        | 2.8.12           | 10.5.59         | Composer            |
 | 8.2        | 2.8.x            | 10.5.x          | Composer            |
 | 8.3        | 2.8.x            | 11.x            | Composer            |
+| 8.4        | 2.9.x            | 12.5.x          | Composer            |
+| 8.5        | 2.9.x            | 13.x            | Composer            |
 
 Verify after version switch:
 ```bash

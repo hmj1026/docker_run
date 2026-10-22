@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-VERSIONS=("56" "74" "80" "81" "82" "83")
+VERSIONS=("56" "74" "80" "81" "82" "83" "84" "85")
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"

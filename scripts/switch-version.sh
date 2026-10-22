@@ -9,7 +9,7 @@ set -euo pipefail
 # ================================================
 # 支援的版本清單
 # ================================================
-SUPPORTED_PHP_VERSIONS=("56" "74" "80" "81" "82" "83")
+SUPPORTED_PHP_VERSIONS=("56" "74" "80" "81" "82" "83" "84" "85")
 SUPPORTED_MYSQL_VERSIONS=("5.7" "8.0" "8.4")
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

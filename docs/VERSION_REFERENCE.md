@@ -16,6 +16,8 @@
 | **8.1** | php:8.1-fpm-bullseye | **2.8.12** | **10.5.59** | Composer | ✅ 已測試 |
 | **8.2** | php:8.2.35-fpm-bookworm | **2.8.x** | **10.5.x** | Composer | ✅ 已配置 |
 | **8.3** | php:8.3.36-fpm-bookworm | **2.8.x** | **11.x** | Composer | ✅ 已配置 |
+| **8.4** | php:8.4.27-fpm-bookworm | **2.9.x** | **12.5.x** | Composer | 已測試 (2026-10-22) |
+| **8.5** | php:8.5.12-fpm-bookworm | **2.9.x** | **13.x** | Composer | 已測試 (2026-10-22) |
 
 ## 安全性：CVE-2026-109618 / CVE-2026-109619（2026-10-21）
 
@@ -28,6 +30,8 @@ php.net 公告兩個可未經認證遠端執行程式碼（RCE）的漏洞，影
 
 | PHP 版本 | 狀態 | 說明 |
 |---------|------|------|
+| 8.5 | 已修補 | 固定 `php:8.5.12-fpm-bookworm`；另設 `fatal_error_backtraces = 0` |
+| 8.4 | 已修補 | 固定 `php:8.4.27-fpm-bookworm` |
 | 8.3 | 已修補 | 固定 `php:8.3.36-fpm-bookworm` |
 | 8.2 | 已修補 | 固定 `php:8.2.35-fpm-bookworm` |
 | 8.1 / 8.0 / 7.4 | 僅緩解，仍有風險 | 官方已 EOL；php-src 只提供 backport 原始碼分支，本專案未自行編譯 |
@@ -53,13 +57,21 @@ php.net 公告兩個可未經認證遠端執行程式碼（RCE）的漏洞，影
 - **PHP 5.6**: 使用 Composer 1.10.27（Composer 1.x 系列最終版本）
   - ⚠️ 注意：Packagist 已停止支援，僅能用於基本功能
 - **PHP 7.4**: 使用 Composer 2.2.24（Composer 2.2 LTS，確保長期穩定）
-- **PHP 8.0+**: 使用 Composer 2.8.x（最新穩定版，享受效能與功能改善）
+- **PHP 8.0 - 8.3**: 使用 Composer 2.8.x
+- **PHP 8.4 - 8.5**: 使用 Composer 2.9.x（最新穩定版）
 
 ### PHPUnit
 - **PHP 5.6**: PHPUnit 5.7.27（PHP 5.6 最高相容版本，PHAR 安裝）
 - **PHP 7.4 - 8.0**: PHPUnit 9.6.x（LTS 版本，廣泛相容）
 - **PHP 8.1 - 8.2**: PHPUnit 10.5.x（PHPUnit 10 LTS）
-- **PHP 8.3**: PHPUnit 11.x（最新穩定版本，支援 PHP 8.3 新特性）
+- **PHP 8.3**: PHPUnit 11.x
+- **PHP 8.4**: PHPUnit 12.5.x（需 PHP >= 8.3）
+- **PHP 8.5**: PHPUnit 13.x（需 PHP >= 8.4.1）
+
+### PHP 8.4 / 8.5 注意事項
+- PHP 8.5 起 OPcache 已內建於核心，Dockerfile 不可再 `docker-php-ext-install opcache`。
+- 8.4 / 8.5 的 php.ini 已移除會在啟動時產生 Deprecated 或已失效的設定：`mbstring.internal_encoding`、`mbstring.http_input`、`mbstring.http_output`、`log_errors_max_len`、`opcache.fast_shutdown`、`mysqli.reconnect`、`auto_detect_line_endings`，並自 `error_reporting` 移除 `E_STRICT`。
+- Yii 1.1 / Laravel 5.6 於 8.4 / 8.5 的相容性屬應用層問題，切換前請自行驗證。
 
 ## 安裝方式
 
@@ -74,7 +86,7 @@ COPY --from=composer:X.X.X /usr/bin/composer /usr/local/bin/composer
 
 ### PHPUnit
 
-**PHP 7.4 - 8.3** (透過 Composer 安裝):
+**PHP 7.4 - 8.5** (透過 Composer 安裝):
 ```dockerfile
 RUN composer global require phpunit/phpunit:^X.X --no-interaction --prefer-dist && \
     ln -s /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
@@ -198,7 +210,7 @@ PHP_VERSION=83 docker compose exec php phpunit
 PHP_VERSION=56 docker compose build php
 
 # 重新建構所有 PHP 版本（需要逐一切換）
-for v in 56 74 80 81 82 83; do
+for v in 56 74 80 81 82 83 84 85; do
   PHP_VERSION=$v docker compose build php
 done
 
@@ -214,6 +226,7 @@ PHP_VERSION=74 docker compose build --no-cache php
 | 1.10.x | 5.3 | 8.0 | ❌ 已停止 (2025/09/01) |
 | 2.2.x | 7.2 | 8.2 | ✅ 支援 |
 | 2.8.x | 7.2 | 8.3+ | ✅ 支援 |
+| 2.9.x | 7.2 | 8.5 | 支援 |
 
 ### PHPUnit 相容性
 | PHPUnit 版本 | PHP 最低需求 | PHP 最高支援 | 安裝方式 |
@@ -222,6 +235,8 @@ PHP_VERSION=74 docker compose build --no-cache php
 | 9.6.x | 7.3 | 8.2 | Composer |
 | 10.5.x | 8.1 | 8.3+ | Composer |
 | 11.x | 8.2 | 8.3+ | Composer |
+| 12.5.x | 8.3 | 8.5 | Composer |
+| 13.x | 8.4.1 | 8.5 | Composer |
 
 ## 驗證結果
 

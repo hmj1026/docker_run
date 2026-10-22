@@ -93,7 +93,7 @@ docker info >/dev/null 2>&1 && echo "Docker is running"
 ### 建構所有版本（一次性）
 
 ```bash
-for v in 56 74 80 81 82 83; do
+for v in 56 74 80 81 82 83 84 85; do
     echo "Building PHP $v..."
     PHP_VERSION=$v docker compose build php
 done
@@ -136,3 +136,5 @@ PHP_VERSION=81 docker compose run --rm php sh -c "php --version && composer --ve
 | 8.1 | 2.8.12   | 10.5.59 | Composer|
 | 8.2 | 2.8.x    | 10.5.x  | Composer|
 | 8.3 | 2.8.x    | 11.x    | Composer|
+| 8.4 | 2.9.x    | 12.5.x  | Composer|
+| 8.5 | 2.9.x    | 13.x    | Composer|

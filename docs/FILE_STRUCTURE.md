@@ -27,9 +27,15 @@ docker_run/
 │   ├── php82/
 │   │   ├── Dockerfile              # ✅ Composer 2.8.x + PHPUnit 10.5.x
 │   │   └── php.ini                 # PHP 8.2 配置
-│   └── php83/
-│       ├── Dockerfile              # ✅ Composer 2.8.x + PHPUnit 11.x
-│       └── php.ini                 # PHP 8.3 配置
+│   ├── php83/
+│   │   ├── Dockerfile              # ✅ Composer 2.8.x + PHPUnit 11.x
+│   │   └── php.ini                 # PHP 8.3 配置
+│   ├── php84/
+│   │   ├── Dockerfile              # Composer 2.9.x + PHPUnit 12.5.x
+│   │   └── php.ini                 # PHP 8.4 配置
+│   └── php85/
+│       ├── Dockerfile              # Composer 2.9.x + PHPUnit 13.x
+│       └── php.ini                 # PHP 8.5 配置
 │
 ├── 📂 nginx/                       # Nginx 配置
 │   ├── Dockerfile                  # 自訂 Nginx image（含時區資料）
@@ -129,7 +135,7 @@ bash scripts/switch-version.sh
 #### 切換 PHP 版本
 ```bash
 # 修改 .env 中的 PHP_VERSION
-PHP_VERSION=74  # 可選: 56, 74, 80, 81, 82, 83
+PHP_VERSION=74  # 可選: 56, 74, 80, 81, 82, 83, 84, 85
 
 # 重新建構
 docker compose build php
