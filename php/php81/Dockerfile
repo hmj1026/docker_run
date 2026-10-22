@@ -15,6 +15,13 @@ ARG PHP_TIMEZONE=Asia/Taipei
 WORKDIR /var/www
 
 # ================================================
+# 修正 Debian Bullseye EOL 套件來源（已移至 archive.debian.org）
+# ================================================
+RUN sed -i 's@deb.debian.org@archive.debian.org@g' /etc/apt/sources.list \
+    && sed -i 's@security.debian.org@archive.debian.org@g' /etc/apt/sources.list \
+    && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99disable-check-valid-until
+
+# ================================================
 # 安裝系統依賴
 # ================================================
 RUN apt-get update && apt-get install -y \
@@ -58,7 +65,10 @@ RUN docker-php-ext-install \
 # 安裝 Xdebug 3.x (PHP 8.1+ 相容版本)
 # 用於程式碼覆蓋率報告 (phpunit --coverage-*)
 # ================================================
-RUN pecl install xdebug && \
+# 舊版 pecl 已無法讀取 pecl.php.net REST 資訊，改為直接下載 tarball 安裝（固定 3.4.7：支援 PHP 8.0 - 8.4）
+RUN curl -fsSL -o /tmp/xdebug-3.4.7.tgz https://pecl.php.net/get/xdebug-3.4.7.tgz && \
+    pecl install /tmp/xdebug-3.4.7.tgz && \
+    rm -f /tmp/xdebug-3.4.7.tgz && \
     docker-php-ext-enable xdebug
 
 RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
