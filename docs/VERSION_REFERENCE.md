@@ -14,8 +14,38 @@
 | **7.4** | php:7.4-fpm-buster | **2.2.24** | **9.6.30** | Composer | ✅ 已測試 |
 | **8.0** | php:8.0-fpm-bullseye | **2.8.x** | **9.6.x** | Composer | ✅ 已配置 |
 | **8.1** | php:8.1-fpm-bullseye | **2.8.12** | **10.5.59** | Composer | ✅ 已測試 |
-| **8.2** | php:8.2-fpm-bookworm | **2.8.x** | **10.5.x** | Composer | ✅ 已配置 |
-| **8.3** | php:8.3-fpm-bookworm | **2.8.x** | **11.x** | Composer | ✅ 已配置 |
+| **8.2** | php:8.2.35-fpm-bookworm | **2.8.x** | **10.5.x** | Composer | ✅ 已配置 |
+| **8.3** | php:8.3.36-fpm-bookworm | **2.8.x** | **11.x** | Composer | ✅ 已配置 |
+
+## 安全性：CVE-2026-109618 / CVE-2026-109619（2026-10-21）
+
+php.net 公告兩個可未經認證遠端執行程式碼（RCE）的漏洞，影響所有處理 Web 請求的 SAPI（含 PHP-FPM）：
+
+- CVE-2026-109618（GHSA-w8hw-w9fx-j79w）：OOM 中斷使請求資料半初始化，清理階段誤用而造成記憶體破壞。
+- CVE-2026-109619（GHSA-6wmf-4rv5-p3rp）：請求擁有的內部狀態在記憶體釋放後殘留，被同一 worker 的下一個請求使用。
+
+公告：https://www.php.net/archive/2026.php
+
+| PHP 版本 | 狀態 | 說明 |
+|---------|------|------|
+| 8.3 | 已修補 | 固定 `php:8.3.36-fpm-bookworm` |
+| 8.2 | 已修補 | 固定 `php:8.2.35-fpm-bookworm` |
+| 8.1 / 8.0 / 7.4 | 僅緩解，仍有風險 | 官方已 EOL；php-src 只提供 backport 原始碼分支，本專案未自行編譯 |
+| 5.6 | 僅緩解，仍有風險 | 官方無任何修補 |
+
+所有版本皆套用公告的暫行緩解（`php.ini` + FPM pool `php_admin_*`，應用程式無法 `ini_set()` 覆寫）：
+
+| 設定 | 舊值 | 新值 | 對應 CVE |
+|------|------|------|---------|
+| `memory_limit` | 512M | -1 | 109618 |
+| `post_max_size` | 100M | 32M | 109618 |
+| `upload_max_filesize` | 100M | 30M | 109618 |
+| `session.upload_progress.enabled` | (預設 On) | 0 | 109619 |
+
+注意：
+- 上傳或 POST 超過 32M 的請求（例如大型匯入）會失敗；若必須放寬，請了解這會擴大 109618 的攻擊面。
+- 緩解只阻擋已確認的攻擊路徑，並非完整修補。EOL 版本請盡量改用 8.2 以上。
+- 更新後必須重建映像並重啟所有 worker：`docker compose build --no-cache --pull php && docker compose up -d`。
 
 ## 版本選擇原則
 
