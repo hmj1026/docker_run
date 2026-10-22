@@ -66,11 +66,14 @@ RUN docker-php-ext-install \
 
 # ================================================
 # 安裝 Xdebug 2.5.5 (PHP 5.6 支援的最高版本)
+# 舊版 pecl 已無法讀取 pecl.php.net REST 資訊，改為直接下載 tarball 安裝
 # 用於程式碼覆蓋率報告 (phpunit --coverage-*)
 # ================================================
 RUN apt-get update -o Acquire::Check-Valid-Until=false && \
     apt-get install -y --allow-unauthenticated $PHPIZE_DEPS && \
-    pecl install xdebug-2.5.5 && \
+    curl -fsSL -o /tmp/xdebug-2.5.5.tgz https://pecl.php.net/get/xdebug-2.5.5.tgz && \
+    pecl install /tmp/xdebug-2.5.5.tgz && \
+    rm -f /tmp/xdebug-2.5.5.tgz && \
     docker-php-ext-enable xdebug && \
     rm -rf /var/lib/apt/lists/*
 
