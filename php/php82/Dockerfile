@@ -93,6 +93,8 @@ RUN echo "[www]" > /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "pm.max_requests = 500" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "; CVE-2026-109618/109619 緩解：pool 層級鎖定，應用程式無法 ini_set 覆寫" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "php_admin_value[memory_limit] = -1" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_value[post_max_size] = 32M" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "php_admin_value[upload_max_filesize] = 30M" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
     echo "php_admin_flag[session.upload_progress.enabled] = off" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # 建立日誌目錄
