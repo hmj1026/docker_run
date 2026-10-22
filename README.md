@@ -2,7 +2,7 @@
 
 ## ✨ 新功能：統一 Composer & PHPUnit 環境 + 程式碼覆蓋率支援
 
-所有 PHP 版本（5.6, 7.4, 8.0, 8.1, 8.2, 8.3）現已內建對應的最高 LTS 版本 Composer、PHPUnit 以及 Xdebug，可直接產生程式碼覆蓋率報告。
+所有 PHP 版本（5.6, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5）現已內建對應的最高 LTS 版本 Composer、PHPUnit 以及 Xdebug，可直接產生程式碼覆蓋率報告。
 
 | PHP 版本 | Xdebug 版本 | 覆蓋率模式 |
 |---------|------------|---------|
@@ -91,7 +91,7 @@ Docker 會將以下目錄掛載到容器內：
 - `docker-compose.yml`：nginx/php/mysql 服務定義
 - `.env`：版本、路徑、Port、DB 參數
 - `nginx/conf.d/www.posdev.test.conf`：虛擬主機設定（預設強制 HTTPS）
-- `php/php{56,74,80,81,82,83}/`：各版本 PHP Dockerfile
+- `php/php{56,74,80,81,82,83,84,85}/`：各版本 PHP Dockerfile
 - `mysql/init/`：資料庫初始化 SQL（不納入版本控制）
 - `scripts/`：版本切換、憑證產生等工具腳本
 
@@ -230,7 +230,7 @@ bash scripts/switch-version.sh 80 8.0
 ```
 
 ### 支援的版本
-- **PHP**: 56, 74, 80, 81, 82, 83
+- **PHP**: 56, 74, 80, 81, 82, 83, 84, 85
 - **MySQL**: 5.7, 8.0, 8.4
 
 ### 套用變更
@@ -261,7 +261,7 @@ docker exec -i -w //var/www/www.posdev/<project> pos_php \
 | PHP 版本 | Xdebug 版本 | 預設行為 | Step Debug 啟用方式 |
 |---------|------------|---------|------------------|
 | 5.6     | 2.5.5      | 覆蓋率啟用，step debug 關閉 | `xdebug.default_enable=1` in ini |
-| 7.4~8.3 | 3.x        | 僅覆蓋率，不影響 web 效能 | `XDEBUG_MODE=debug` 環境變數 |
+| 7.4~8.5 | 3.x        | 僅覆蓋率，不影響 web 效能 | `XDEBUG_MODE=debug` 環境變數 |
 
 ### 故障排除
 

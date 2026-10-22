@@ -2,7 +2,7 @@
 
 ## 📋 專案概述
 
-本專案為所有 PHP 版本容器（5.6, 7.4, 8.0, 8.1, 8.2, 8.3）統一安裝了對應的最高 LTS 版本 Composer 和 PHPUnit，確保開發和測試環境的一致性。
+本專案為所有 PHP 版本容器（5.6, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5）統一安裝了對應的最高 LTS 版本 Composer 和 PHPUnit，確保開發和測試環境的一致性。
 
 ## ✨ 主要改進
 
@@ -31,6 +31,8 @@
 | 8.1 | 2.8.12 | 10.5.59 | Composer | ✅ 已測試 |
 | 8.2 | 2.8.x | 10.5.x | Composer | ✅ 已配置 |
 | 8.3 | 2.8.x | 11.x | Composer | ✅ 已配置 |
+| 8.4 | 2.9.x | 12.5.x | Composer | 已配置 |
+| 8.5 | 2.9.x | 13.x | Composer | 已配置 |
 
 ## 🚀 使用方式
 
@@ -105,8 +107,12 @@ docker_run/
 │   │   └── Dockerfile          # ✅ 已更新：Composer 2.8 + PHPUnit 10.5
 │   ├── php82/
 │   │   └── Dockerfile          # ✅ 已更新：Composer 2.8 + PHPUnit 10.5
-│   └── php83/
-│       └── Dockerfile          # ✅ 已更新：Composer 2.8 + PHPUnit 11
+│   ├── php83/
+│   │   └── Dockerfile          # ✅ 已更新：Composer 2.8 + PHPUnit 11
+│   ├── php84/
+│   │   └── Dockerfile          # Composer 2.9 + PHPUnit 12.5
+│   └── php85/
+│       └── Dockerfile          # Composer 2.9 + PHPUnit 13
 ├── docs/
 │   ├── VERSION_REFERENCE.md    # 📖 版本對照與使用指引
 │   ├── IMPLEMENTATION_PLAN.md  # 📝 實作計畫與驗證記錄
@@ -128,7 +134,7 @@ COPY --from=composer:X.X.X /usr/bin/composer /usr/local/bin/composer
 
 ### PHPUnit 安裝方式
 
-**PHP 7.4 - 8.3** (透過 Composer):
+**PHP 7.4 - 8.5** (透過 Composer):
 ```dockerfile
 # 透過 Composer 全域安裝並建立符號連結
 RUN composer global require phpunit/phpunit:^X.X --no-interaction --prefer-dist && \
