@@ -2,7 +2,8 @@
 # PHP 8.0 Dockerfile for POS
 # 基於 Debian Bullseye
 # ================================================
-FROM php:8.3-fpm-bookworm
+# 固定 8.3.36：修補 CVE-2026-109618 / CVE-2026-109619 (php.net 2026-10-21)
+FROM php:8.3.36-fpm-bookworm
 
 # 設定環境變數
 ARG PHP_MEMORY_LIMIT=512M
