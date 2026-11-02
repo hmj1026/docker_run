@@ -23,7 +23,8 @@ services:
       - ${WEB_ROOT_PATH}:/var/www/www.posdev
       # 子專案目錄覆蓋掛載
       - ${PROJECT_PATH}:${PROJECT_CONTAINER_PATH}
-      - ${PROJECT_SECONDARY_PATH}:${PROJECT_SECONDARY_CONTAINER_PATH}
+      # zdpos-217 的 .scratch symlink 指向此目錄；整合測試寫入 .scratch 需可解析
+      - ${SCRATCH_DOCS_PATH}:${SCRATCH_DOCS_CONTAINER_PATH}
       - ${PROJECT_OKL_PATH}:${PROJECT_OKL_CONTAINER_PATH}
       - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
       - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
@@ -61,9 +62,13 @@ services:
   # PHP-FPM Service (動態版本)
   # ================================================
   php:
+    image: ${COMPOSE_PROJECT_NAME}-php:${PHP_VERSION}
     build:
       context: ./php/php${PHP_VERSION}
       dockerfile: Dockerfile
+      labels:
+        org.opencontainers.image.revision: ${GIT_SHA:-unknown}
+        posdev.php-version: ${PHP_VERSION}
       args:
         PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT}
         PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE}
@@ -77,7 +82,8 @@ services:
       - ${WEB_ROOT_PATH}:/var/www/www.posdev
       # 子專案目錄覆蓋掛載
       - ${PROJECT_PATH}:${PROJECT_CONTAINER_PATH}
-      - ${PROJECT_SECONDARY_PATH}:${PROJECT_SECONDARY_CONTAINER_PATH}
+      # zdpos-217 的 .scratch symlink 指向此目錄；整合測試寫入 .scratch 需可解析
+      - ${SCRATCH_DOCS_PATH}:${SCRATCH_DOCS_CONTAINER_PATH}
       - ${PROJECT_OKL_PATH}:${PROJECT_OKL_CONTAINER_PATH}
       - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
       - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
@@ -126,6 +132,83 @@ services:
     restart: unless-stopped
 
   # ================================================
+  # PHP 8.4 並行測試容器 (profile: php84)
+  # 啟動: docker compose --profile php84 up -d --no-deps php84
+  # 以宿主機相同路徑掛載 PROJECTS_ROOT，worktree / .git 指標 / .scratch symlink 才能解析
+  # ================================================
+  php84:
+    profiles: ["php84"]
+    image: ${COMPOSE_PROJECT_NAME}-php:84
+    build:
+      context: ./php/php84
+      dockerfile: Dockerfile
+      labels:
+        org.opencontainers.image.revision: ${GIT_SHA:-unknown}
+        posdev.php-version: "84"
+      args:
+        PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT}
+        PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE}
+        PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE}
+        PHP_MAX_EXECUTION_TIME: ${PHP_MAX_EXECUTION_TIME}
+        PHP_TIMEZONE: ${PHP_TIMEZONE}
+    container_name: ${COMPOSE_PROJECT_NAME}_php84
+    entrypoint: ["/bin/bash", "/usr/local/bin/php-entrypoint.sh"]
+    volumes:
+      # 專案目錄掛載（與 php 服務相同）
+      - ${WEB_ROOT_PATH}:/var/www/www.posdev
+      - ${PROJECT_PATH}:${PROJECT_CONTAINER_PATH}
+      - ${SCRATCH_DOCS_PATH}:${SCRATCH_DOCS_CONTAINER_PATH}
+      - ${PROJECT_OKL_PATH}:${PROJECT_OKL_CONTAINER_PATH}
+      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
+      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
+      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds
+      - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3
+      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3
+      - ${WEB_ROOT_PATH}/dev4:/var/www/www.posdev/dev4
+      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186
+      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy
+      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao
+      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei
+      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn
+      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake
+      - ${WEB_ROOT_PATH}/oklao2:/var/www/www.posdev/oklao2
+      - ${NOTIFIER_PATH}:/var/www/notifier
+      # 宿主機路徑同構掛載（worktree、.git 指標、.scratch symlink、docker exec -w <宿主機路徑>）
+      - ${PROJECTS_ROOT}:${PROJECTS_ROOT}
+      # 測試暫存工作目錄 (HOME / COMPOSER_HOME) 與測試日誌
+      - ./work/php84:/work
+      - ./logs/test:/var/log/test
+      # 日誌輸出（與 php 服務分開）
+      - ./logs/php84:/var/log/php
+      - ./logs/zdnStorage/logs:/var/www/zdnStorage/logs
+      - ./logs/zdnStorage/invoices_dev:/var/www/zdnStorage/invoices_dev
+      - ./scripts/php-entrypoint.sh:/usr/local/bin/php-entrypoint.sh:ro
+    environment:
+      - PHP_VERSION=84
+      - HOME=/work
+      - COMPOSER_HOME=/work/.composer
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - TEST_DB_HOST=${TEST_DB_HOST}
+      - TEST_DB_USER=${TEST_DB_USER}
+      - TEST_DB_PASSWORD=${TEST_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t >/dev/null 2>&1 && bash -lc ': </dev/tcp/127.0.0.1/9000'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - pos_network
+    restart: "no"
+
+  # ================================================
   # MySQL Database Service
   # ================================================
   mysql:
@@ -168,6 +251,36 @@ services:
     networks:
       - pos_network
     restart: unless-stopped
+
+  # ================================================
+  # MariaDB 10.1 (profile: mariadb101)
+  # 正式環境 collation 對照組；啟動: docker compose --profile mariadb101 up -d --no-deps mariadb101
+  # ================================================
+  mariadb101:
+    profiles: ["mariadb101"]
+    image: mariadb:10.1.37
+    container_name: ${COMPOSE_PROJECT_NAME}_mariadb101
+    ports:
+      # 測試用引擎僅綁 loopback，不對區網開放
+      - "127.0.0.1:${MARIADB101_PORT:-3307}:3306"
+    environment:
+      - TZ=${PHP_TIMEZONE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./mysql/mariadb101/conf.d:/etc/mysql/conf.d:ro
+      - ./data/mariadb101:/var/lib/mysql
+      - ./logs/mariadb101:/var/log/mysql
+    healthcheck:
+      # 以 root 驗證（不依賴 TEST_DB_USER 是否已建立）
+      test: ["CMD-SHELL", "if [ -n \"$${MYSQL_ROOT_PASSWORD}\" ]; then mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent; else mysqladmin ping -h 127.0.0.1 -u root --silent; fi"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - pos_network
+    restart: "no"
 
   # ================================================
   # Node.js Service (KDS 前端 build / Jest 測試)

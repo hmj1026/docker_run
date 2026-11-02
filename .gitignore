@@ -19,3 +19,14 @@ compact-notes/
 # Script backups
 *.sh.bak
 docker-compose.override.yml
+
+# e2e 臨時 nginx 規則
+nginx/conf.d/e2e/*.conf
+
+# 測試環境產物
+work/
+logs/test/
+logs/php84/
+logs/mariadb101/
+data/mariadb101/
+.claude/artifacts/
