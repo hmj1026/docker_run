@@ -215,7 +215,8 @@ services:
     image: mysql:${MYSQL_VERSION}
     container_name: ${COMPOSE_PROJECT_NAME}_mysql
     ports:
-      - "${MYSQL_PORT}:3306"
+      # 僅綁 loopback：root 為空密碼，不對區網開放
+      - "127.0.0.1:${MYSQL_PORT}:3306"
     environment:
       - TZ=${PHP_TIMEZONE}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
