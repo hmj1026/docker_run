@@ -35,7 +35,9 @@ php84-test:
 	@if [ -f "$(WORKTREE)/protected/tests/scripts/run-tests.sh" ]; then \
 	  mkdir -p logs/test; log="logs/test/$$(date +%Y%m%d-%H%M%S)-php84-$(SUITE).log"; \
 	  echo "log: $$log"; \
-	  ZDPOS_PHP_CONTAINER=$(COMPOSE_PROJECT_NAME)_php84 ZDPOS_DOCKER_WORKDIR=$(WORKTREE) \
+	  # run-tests.sh 以未加引號的 $$DOCKER_CMD 展開，故可把 --user/-e 旗標前置於容器名，
+	  # 讓測試以宿主機 uid 執行，避免留下 root 擁有的 .phpunit.result.cache 等檔案。
+	  ZDPOS_PHP_CONTAINER="--user $(or $(HOST_UID),1000):$(or $(HOST_GID),1000) -e HOME=/work $(COMPOSE_PROJECT_NAME)_php84" ZDPOS_DOCKER_WORKDIR=$(WORKTREE) \
 	    bash "$(WORKTREE)/protected/tests/scripts/run-tests.sh" $(SUITE) 2>&1 | tee "$$log"; \
 	  exit $${PIPESTATUS[0]}; \
 	else \
