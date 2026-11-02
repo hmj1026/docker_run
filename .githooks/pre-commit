@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# pre-commit: 僅在暫存檔涉及環境設定時執行 scripts/check-config.sh
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "${ROOT_DIR}"
+
+if git diff --cached --name-only | grep -Eq '^(docker-compose\.yml|Makefile|nginx/|php/|mysql/|scripts/)'; then
+  bash scripts/check-config.sh
+fi
