@@ -9,6 +9,10 @@ chmod -R 0777 /var/www/zdnStorage/invoices_dev
 
 # Fix assets directories for www.posdev projects
 find /var/www/www.posdev -maxdepth 2 -name "assets" -type d -exec chown www-data:www-data {} \;
+# Yii runtime 目錄須同時可被 www-data（FPM，擁有者）與宿主機使用者（群組 HOST_GID，php84 測試）寫入；
+# 否則新掛載專案的 runtime 會導致 Error 500。2775 = 群組可寫 + setgid，新檔沿用群組。
+find /var/www/www.posdev -maxdepth 3 -type d -path "*/protected/runtime" \
+  -exec chown "www-data:${HOST_GID:-1000}" {} \; -exec chmod 2775 {} \;
 
 # Remove empty published asset hash directories left behind by interrupted Yii publishes.
 while IFS= read -r -d '' empty_publish_dir; do
