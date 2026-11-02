@@ -30,6 +30,8 @@ RUN apt-get update && apt-get install -y \
     g++ \
     git \
     unzip \
+    python3 \
+    default-mysql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # ================================================
@@ -71,10 +73,16 @@ RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdeb
 COPY --from=composer:2.9 /usr/bin/composer /usr/local/bin/composer
 
 # ================================================
-# 安裝 PHPUnit 12 (最新穩定版本)
+# 安裝 PHPUnit 13.4.5 (固定版本；13.4.3 受 CVE-2026-119193 影響，composer audit 會擋下)
+# 安裝到 /opt/composer，讓非 root (HOST_UID) 執行時也能使用
 # ================================================
-RUN composer global require phpunit/phpunit:^12.0 --no-interaction --prefer-dist && \
-    ln -s /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
+ENV COMPOSER_HOME=/opt/composer
+RUN composer global require phpunit/phpunit:13.4.5 --no-interaction --prefer-dist && \
+    ln -s /opt/composer/vendor/bin/phpunit /usr/local/bin/phpunit && \
+    chmod -R a+rX /opt/composer
+
+# 測試用暫存工作目錄（php84 服務將 HOME / COMPOSER_HOME 指向此處）
+RUN mkdir -p /work && chmod 1777 /work
 
 # ================================================
 # 配置 PHP-FPM
