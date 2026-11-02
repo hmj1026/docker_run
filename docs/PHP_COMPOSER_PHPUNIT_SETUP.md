@@ -31,7 +31,7 @@
 | 8.1 | 2.8.12 | 10.5.59 | Composer | ✅ 已測試 |
 | 8.2 | 2.8.x | 10.5.x | Composer | ✅ 已配置 |
 | 8.3 | 2.8.x | 11.x | Composer | ✅ 已配置 |
-| 8.4 | 2.9.x | 12.5.x | Composer | 已配置 |
+| 8.4 | 2.9.x | 13.4.5 (固定) | Composer | 已配置 |
 | 8.5 | 2.9.x | 13.x | Composer | 已配置 |
 
 ## 🚀 使用方式
@@ -110,7 +110,7 @@ docker_run/
 │   ├── php83/
 │   │   └── Dockerfile          # ✅ 已更新：Composer 2.8 + PHPUnit 11
 │   ├── php84/
-│   │   └── Dockerfile          # Composer 2.9 + PHPUnit 12.5
+│   │   └── Dockerfile          # Composer 2.9 + PHPUnit 13.4.5 (固定)
 │   └── php85/
 │       └── Dockerfile          # Composer 2.9 + PHPUnit 13
 ├── docs/

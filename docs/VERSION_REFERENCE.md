@@ -16,7 +16,7 @@
 | **8.1** | php:8.1-fpm-bullseye | **2.8.12** | **10.5.59** | Composer | ✅ 已測試 |
 | **8.2** | php:8.2.35-fpm-bookworm | **2.8.x** | **10.5.x** | Composer | ✅ 已配置 |
 | **8.3** | php:8.3.36-fpm-bookworm | **2.8.x** | **11.x** | Composer | ✅ 已配置 |
-| **8.4** | php:8.4.27-fpm-bookworm | **2.9.x** | **12.5.x** | Composer | 已測試 (2026-10-22) |
+| **8.4** | php:8.4.27-fpm-bookworm | **2.9.x** | **13.4.5** (固定) | Composer | 已測試 (2026-10-22) |
 | **8.5** | php:8.5.12-fpm-bookworm | **2.9.x** | **13.x** | Composer | 已測試 (2026-10-22) |
 
 ## 安全性：CVE-2026-109618 / CVE-2026-109619（2026-10-21）
@@ -65,7 +65,7 @@ php.net 公告兩個可未經認證遠端執行程式碼（RCE）的漏洞，影
 - **PHP 7.4 - 8.0**: PHPUnit 9.6.x（LTS 版本，廣泛相容）
 - **PHP 8.1 - 8.2**: PHPUnit 10.5.x（PHPUnit 10 LTS）
 - **PHP 8.3**: PHPUnit 11.x
-- **PHP 8.4**: PHPUnit 12.5.x（需 PHP >= 8.3）
+- **PHP 8.4**: PHPUnit 13.4.5（固定；13.4.3 受 CVE-2026-119193 影響，需 PHP >= 8.4.1）
 - **PHP 8.5**: PHPUnit 13.x（需 PHP >= 8.4.1）
 
 ### PHP 8.4 / 8.5 注意事項

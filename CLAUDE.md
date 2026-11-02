@@ -62,6 +62,10 @@ make logs              # Tail all logs
 make logs-php          # Tail PHP logs only
 make php-version       # Show PHP version
 make mysql-version     # Show MySQL version
+make preflight         # Fix mysql conf.d permissions (644)
+make check             # Run config guardrail checks
+make hooks             # Enable .githooks (pre-commit)
+make smoke             # HTTP smoke test against running stack
 ```
 
 ### PHP Version Switching (change PHP_VERSION in .env first)
@@ -77,6 +81,8 @@ PHP_VERSION=74 docker compose build php --no-cache && docker compose up -d
 ```
 
 ### Testing (within PHP container or via docker exec)
+PHP 8.4 parallel testing, test DB, worktree paths, logs -> docs/TEST_GUIDE.md
+
 ```bash
 # Enter PHP container
 docker compose exec php bash
@@ -185,24 +191,7 @@ lsof -i :3306
 
 ## PHP Version Composer & PHPUnit Compatibility
 
-Each PHP version has pre-installed Composer and PHPUnit:
-
-| PHP Version | Composer Version | PHPUnit Version | Installation Method |
-|------------|------------------|-----------------|---------------------|
-| 5.6        | 1.10.27          | 5.7.27          | PHAR (Composer deprecated) |
-| 7.4        | 2.2.24           | 9.6.30          | Composer            |
-| 8.0        | 2.8.x            | 9.6.x           | Composer            |
-| 8.1        | 2.8.12           | 10.5.59         | Composer            |
-| 8.2        | 2.8.x            | 10.5.x          | Composer            |
-| 8.3        | 2.8.x            | 11.x            | Composer            |
-| 8.4        | 2.9.x            | 12.5.x          | Composer            |
-| 8.5        | 2.9.x            | 13.x            | Composer            |
-
-Verify after version switch:
-```bash
-docker compose run --rm php composer --version
-docker compose run --rm php phpunit --version
-```
+各 PHP 版本的 Composer / PHPUnit 版本對照與驗證方式見 `docs/PHP_COMPOSER_PHPUNIT_SETUP.md`。
 
 ---
 
