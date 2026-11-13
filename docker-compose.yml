@@ -209,6 +209,69 @@ services:
     restart: "no"
 
   # ================================================
+  # PHP 8.4 FPM (對齊 PROD vm1: Ubuntu 24.04 + sury PPA)
+  # php84.posdev.test 的 upstream；php84 保留給 PHPUnit harness (含 xdebug)
+  # 啟動: docker compose --profile php84 up -d --no-deps php84vm1
+  # ================================================
+  php84vm1:
+    profiles: ["php84"]
+    image: ${COMPOSE_PROJECT_NAME}-php:84vm1
+    build:
+      context: ./php/php84vm1
+      dockerfile: Dockerfile
+      labels:
+        posdev.php-version: "84vm1"
+    container_name: ${COMPOSE_PROJECT_NAME}_php84vm1
+    entrypoint: ["/bin/bash", "/usr/local/bin/php-entrypoint.sh"]
+    volumes:
+      - ${WEB_ROOT_PATH}:/var/www/www.posdev
+      - ${PROJECT_PATH}:${PROJECT_CONTAINER_PATH}
+      - ${SCRATCH_DOCS_PATH}:${SCRATCH_DOCS_CONTAINER_PATH}
+      - ${PROJECT_OKL_PATH}:${PROJECT_OKL_CONTAINER_PATH}
+      - ${PROJECT_CONDUCTOR_PATH}:/var/www/www.posdev/conductor_dev
+      - ${YII_FRAMEWORK_PATH}:/var/www/www.posdev/yii_framework
+      - ${MYPOS_KDS_PATH}:/var/www/www.posdev/mypos_kds
+      - ${MYPOS_DEV3_PATH}:/var/www/www.posdev/mypos_dev3
+      - ${WEB_ROOT_PATH}/dev3:/var/www/www.posdev/dev3
+      - ${WEB_ROOT_PATH}/dev4:/var/www/www.posdev/dev4
+      - ${WEB_ROOT_PATH}/186:/var/www/www.posdev/186
+      - ${WEB_ROOT_PATH}/bdfy:/var/www/www.posdev/bdfy
+      - ${WEB_ROOT_PATH}/oklao:/var/www/www.posdev/oklao
+      - ${WEB_ROOT_PATH}/neiwei:/var/www/www.posdev/neiwei
+      - ${WEB_ROOT_PATH}/popcorn:/var/www/www.posdev/popcorn
+      - ${WEB_ROOT_PATH}/winelake:/var/www/www.posdev/winelake
+      - ${WEB_ROOT_PATH}/oklao2:/var/www/www.posdev/oklao2
+      - ${NOTIFIER_PATH}:/var/www/notifier
+      # 宿主機路徑同構掛載（worktree、.git 指標、.scratch symlink）
+      - ${PROJECTS_ROOT}:${PROJECTS_ROOT}
+      - ./logs/php84vm1:/var/log/php
+      - ./logs/zdnStorage/logs:/var/www/zdnStorage/logs
+      - ./logs/zdnStorage/invoices_dev:/var/www/zdnStorage/invoices_dev
+      - ./scripts/php84vm1-entrypoint.sh:/usr/local/bin/php-entrypoint.sh:ro
+    environment:
+      - PHP_VERSION=84
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - TEST_DB_HOST=${TEST_DB_HOST}
+      - TEST_DB_USER=${TEST_DB_USER}
+      - TEST_DB_PASSWORD=${TEST_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm8.4 -t >/dev/null 2>&1 && bash -c ': </dev/tcp/127.0.0.1/9000'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - pos_network
+    restart: "no"
+
+  # ================================================
   # MySQL Database Service
   # ================================================
   mysql:
